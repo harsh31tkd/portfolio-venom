@@ -1,16 +1,49 @@
-# React + Vite
+# 🕷️ Symbiote OS: Venom-Themed Developer Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A unique, highly interactive developer portfolio styled around a dark, Venom/Symbiote aesthetic. Built with React, Vite, and Framer Motion, this portfolio features a fully functional custom admin dashboard that allows you to edit all content on the fly without touching the code.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Symbiote Aesthetics:** Deep blacks, crimson reds, sci-fi terminals, and interactive Venom aesthetics.
+- **Interactive Particle Backgrounds:** Features a custom `react-tsparticles` engine where Symbiote tendrils actively track and react to the user's cursor.
+- **Admin Control Center:** A secure, built-in CMS (accessible at `/admin`) that lets you manage your Introduction, Experience, Education, Projects, Certificates, and Social Links.
+- **In-Browser Image Processing:** Upload a background image in the admin panel and the app automatically removes the background using WebAssembly (`@imgly/background-removal`), resizing it optimally for the site.
+- **Dynamic Buttons:** Add external and internal navigational buttons seamlessly through the admin panel.
+- **Smooth Animations:** Powered by `framer-motion` for fluid page transitions, spring animations, and micro-interactions.
+- **Local Storage Persistence:** All portfolio data is saved directly in your browser's local storage.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework:** React 19 + Vite
+- **Styling:** CSS3, Glassmorphism, Custom Variables
+- **Animations:** Framer Motion, React-TSParticles
+- **Icons:** Lucide React, React Icons
+- **Image Processing:** `@imgly/background-removal`
 
-## Expanding the Oxlint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+To run this project locally:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/harsh31tkd/portfolio.git
+   cd portfolio
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Access the Admin Panel:**
+   - Go to `http://localhost:5173/admin`
+   - Use your host credentials to initialize the bond!
+
+## 📄 License
+
+This project is open-source and available under the MIT License.
