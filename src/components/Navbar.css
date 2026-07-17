@@ -1,0 +1,88 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  background: rgba(15, 15, 17, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 100;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, var(--accent-red), transparent, var(--accent-blue)) 1;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+}
+
+.nav-brand {
+  font-family: var(--font-comic);
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-link {
+  font-family: var(--font-comic);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-size: 1.25rem;
+  padding: 8px 16px;
+  color: var(--text-main);
+  z-index: 1;
+  display: inline-block;
+}
+
+/* Comic Action Panel Background on Hover */
+.nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, var(--accent-red), var(--accent-blue));
+  z-index: -1;
+  transform: scaleX(0) skew(-15deg);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 4px 4px 0px rgba(0,0,0,0.8);
+  border: 2px solid #000;
+}
+
+.nav-link:hover {
+  color: #fff;
+  transform: scale(1.15) translateY(-4px) rotate(-3deg);
+  text-shadow: 2px 2px 0px #000;
+}
+
+.nav-link:hover::before {
+  transform: scaleX(1) skew(-15deg);
+}
+
+.nav-link.active {
+  color: var(--accent-red);
+  text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
+  transform: scale(1.05);
+}
+
+.admin-icon {
+  color: var(--text-muted);
+  transition: color 0.3s ease;
+}
+
+.admin-icon:hover {
+  color: var(--accent-blue);
+}

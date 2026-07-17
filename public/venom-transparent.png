@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8"/>
+    <title>PNGimg.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="robots" content="index, follow, max-image-preview:large"/>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="google-site-verification" content="qcYfEN7AYS0t2uzuv1nfdpuWns53GYFbGG0rNLsatHM"/>
+    <link rel="canonical" href="https://pngimg.com/d"/>
+    <link rel="stylesheet" type="text/css" href="https://pngimg.com/distr/css/css.css"/>
+    <link rel="shortcut icon" href="https://pngimg.com/favicon.ico"/>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0593512396584361"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="row bottom_border">
+    <div class="large-10 small-8 columns">
+        Language: <b>English</b> | <a href="https://pngimg.es">Espana</a>
+    </div>
+    <div class="large-2 small-4 columns" style="text-align: right;">
+        <a href="https://www.paypal.com/donate/?hosted_button_id=H269GXHKMEZBG" target="_blank"><img
+                    src="/distr/img/btn_donate_lg.gif" border="0" alt="Donate"/></a>
+    </div>
+</div>
+<div class="row top-logo">
+    <div class="large-3 logo_div columns">
+        <a href="/" class="none"><span class="logo"><span class="logo_title">pngimg</span>.com</span></a>
+        <h1>PNG images and cliparts for web design</h1>
+    </div>
+    <div class="large-9 columns">
+    </div>
+</div>
+<div class="row">
+    <div class="large-12 columns">
+        <div class="main_menu">
+            <div class="row">
+                <div class="large-3 medium-3 small-3 columns first">
+                    <a href="/about">About</a>
+                </div>
+                <div class="large-3 medium-3 small-3 columns">
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=H269GXHKMEZBG" target="_blank">Donate</a>
+                </div>
+                <div class="large-3 medium-3 small-3 columns">
+                    <a href="/license">License</a>
+                </div>
+                <div class="large-3 medium-3 small-3 columns last">
+                    <a href="/contacts" class="hide-for-small-only">Contacts</a>
+                    <a href="/contacts" class="show-for-small-only"><img src="/distr/img/envelope.png" border="0"
+                                                                         alt="Contacts" title="Contacts"/></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="large-12 columns search_form_div" itemscope itemtype="http://schema.org/WebSite">
+        <link itemprop="url" href="https://pngimg.com"/>
+        <form itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction" method="get"
+              action="https://pngimg.com/search_image/">
+            <meta itemprop="target" content="https://pngimg.com/search_image/?search_image={search_image}"/>
+            <div class="row collapse search_form">
+                <div class="large-11 small-9 columns">
+                    <input type="text" itemprop="query-input" name="search_image" value=""
+                           placeholder="Find PNG images..."/>
+                </div>
+                <div class="large-1 small-3 columns">
+                    <input type="submit" name="search_button" value="Search"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="large-12 columns" style="min-height: 50px;">
+        <!-- PNGIMG.COM /download buttons -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-0593512396584361"
+             data-ad-slot="7194450127"
+             data-ad-format="link"></ins>
+    </div>
+</div>
+<div class="row">
+    <div class="large-12 columns main_content">
+        <a href="//pngimg.com">Home</a>            </div>
+</div>
+<div class="row">
+    <div class="large-12 columns">
+                <!-- PNG resizable top banner -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-0593512396584361"
+             data-ad-slot="2815173729"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        
+        <div class="footer_menu"><a href="/about">About</a> &nbsp; | &nbsp; <a href="/license">License</a> &nbsp; |
+            &nbsp; <a href="/donates">Donate</a> &nbsp; | &nbsp; <a href="https://pngimg.com/cookie.html"
+                                                                    target="_blank">Cookie consent</a> &nbsp; | &nbsp;
+            <a href="/contacts">Contacts</a></div>
+    </div>
+    <div class="large-9 columns copyright">
+        <span class="small_logo"><span class="small_logo_title">pngimg</span>.com</span> Copyright &copy; 2013
+        - 2026. Free PNG images, pictures and cliparts for design and web design
+        <div style="padding-top:7px;">
+            <a href="https://www.facebook.com/pngimg" rel="nofollow" target="_blank"><img src="/distr/img/fb.jpg"
+                                                                                          border="0" alt="Facebook"
+                                                                                          title="Facebook"/></a> &nbsp;
+            <a href="https://twitter.com/PngImgCom" rel="nofollow" target="_blank"><img src="/distr/img/twitter.jpg"
+                                                                                        border="0" alt="Twitter"
+                                                                                        title="Twitter"/></a> &nbsp;
+            <!--<a href="#" rel="nofollow" target="_blank"><img
+                        src="/distr/img/instagram.jpg" border="0" alt="Instagram" title="Instagram"/></a> &nbsp;-->
+
+        </div>
+    </div>
+    <div class="large-3 columns copyright text-right">
+        <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9TJPV0DEQB"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-9TJPV0DEQB');
+</script>    </div>
+</div>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"4536044b58e444568c3014e2d8abe0c9","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
