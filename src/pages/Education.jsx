@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getEducation } from '../backend/db';
+import { getEducation, getEducationSkills, getEducationImage } from '../backend/db';
 import { motion } from 'framer-motion';
 
 
-const ShatteredTerminal = ({ title, dir, status, delay = 0 }) => {
+const ShatteredTerminal = ({ edu, delay = 0 }) => {
+  // Format the title depending on degree level
+  let title = `[${edu.degreeLevel?.toUpperCase() || 'EDUCATION'}]`;
+  if (edu.degreeLevel === 'PhD') {
+    title = `[PHD: ${edu.phdResearchArea?.toUpperCase().replace(/\s+/g, '_') || 'RESEARCH'}]`;
+  } else if (edu.degreeName) {
+    title = `[${edu.degreeName.toUpperCase().replace(/\s+/g, '_')}]`;
+  }
+
   return (
     <motion.div 
       className="broken-screen" 
@@ -77,11 +85,30 @@ const ShatteredTerminal = ({ title, dir, status, delay = 0 }) => {
 
       <div style={{ position: 'relative', zIndex: 20 }}>
         <h3 className="terminal-title" style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>{title}</h3>
-        <p className="terminal-text" style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>&gt; ROOT_DIR: {dir}</p>
-        {Array.isArray(status) ? (
-          status.map((line, i) => <p key={i} className="terminal-text" style={{ opacity: 0.8 }}>&gt; {line}</p>)
-        ) : (
-          <p className="terminal-text" style={{ opacity: 0.8 }}>&gt; {status}</p>
+        <p className="terminal-text" style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: '#fff' }}>&gt; INST: {edu.institution}</p>
+        
+        {edu.board && <p className="terminal-text" style={{ opacity: 0.8 }}>&gt; BOARD: {edu.board}</p>}
+        {edu.fieldOfStudy && <p className="terminal-text" style={{ opacity: 0.8 }}>&gt; FIELD: {edu.fieldOfStudy}</p>}
+        {edu.phdThesis && <p className="terminal-text" style={{ opacity: 0.8 }}>&gt; THESIS: {edu.phdThesis}</p>}
+        
+        <p className="terminal-text" style={{ opacity: 0.8, color: '#eab308' }}>
+          &gt; TIMELINE: {edu.pursuing ? `${edu.startingYear || 'N/A'} - Present` : (edu.fromTo || 'N/A')} {edu.yearOfPassing ? `(Class of ${edu.yearOfPassing})` : ''}
+        </p>
+        
+        <p className="terminal-text" style={{ opacity: 0.8, color: '#4ade80' }}>
+          &gt; STATUS: {edu.pursuing ? 'PURSUING...' : (edu.phdStatus ? edu.phdStatus.toUpperCase() : 'COMPLETED')}
+        </p>
+        
+        {edu.percentage && (
+          <p className="terminal-text" style={{ opacity: 0.8, color: '#a855f7' }}>&gt; SCORE: {edu.percentage}</p>
+        )}
+
+        {edu.description && (
+          <div style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
+            {edu.description.split('\n').map((line, i) => (
+              <p key={i} className="terminal-text" style={{ opacity: 0.7, fontSize: '0.95rem', marginBottom: '0.2rem' }}>{line}</p>
+            ))}
+          </div>
         )}
       </div>
     </motion.div>
@@ -90,18 +117,16 @@ const ShatteredTerminal = ({ title, dir, status, delay = 0 }) => {
 
 export default function Education() {
   const [educationData, setEducationData] = useState([]);
+  const [skills, setSkills] = useState([]);
+  const [imageSrc, setImageSrc] = useState('/image.png');
 
   useEffect(() => {
     setEducationData(getEducation());
+    setSkills(getEducationSkills());
+    
+    const bg = getEducationImage();
+    if (bg) setImageSrc(bg);
   }, []);
-
-
-  const skills = [
-    'JavaScript', 'React.js', 'Node.js', 'Express.js', 
-    'MongoDB', 'Flutter', 'Dart', 'Java', 
-    'Python', 'Firebase', 'REST_APIs', 'MySQL', 
-    'HTML5', 'CSS3', 'Git', 'Postman'
-  ];
 
   // Calculate random floating positions for the hacked packets around Venom
   const getPacketStyle = (idx) => {
@@ -147,7 +172,7 @@ export default function Education() {
           <div style={{ flex: '1 1 450px', position: 'relative', minHeight: '700px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '2rem' }}>
             
             <motion.img 
-              src="/image.png" 
+              src={imageSrc} 
               alt="Venom Hack"
               style={{ width: '100%', maxWidth: '600px', filter: 'drop-shadow(0 0 40px rgba(74,222,128,0.4)) hue-rotate(-20deg) brightness(1.2)', zIndex: 2 }}
               animate={{ y: [-15, 15, -15] }}
@@ -165,7 +190,7 @@ export default function Education() {
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ scale: 1.2, zIndex: 50, background: '#4ade80', color: '#000', boxShadow: '0 0 30px #4ade80' }}
               >
-                {`<${skill}/>`}
+                {`<${skill.name || skill}/>`}
               </motion.div>
             ))}
           </div>
@@ -176,9 +201,7 @@ export default function Education() {
             {educationData.map((edu, idx) => (
               <ShatteredTerminal 
                 key={edu.id || idx}
-                title={edu.title}
-                dir={edu.dir}
-                status={edu.status}
+                edu={edu}
                 delay={idx * 0.15}
               />
             ))}

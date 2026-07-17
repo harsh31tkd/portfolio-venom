@@ -102,11 +102,64 @@ export const DEFAULT_CERTIFICATES = [
 ];
 
 export const DEFAULT_EDUCATION = [
-  { id: 'edu1', title: '[MASTER_OF_COMPUTER_APPLICATIONS]', dir: 'Chandigarh University', status: ['STATUS: 2025 – Pursuing ...'] },
-  { id: 'edu2', title: '[BACHELOR_OF_COMPUTER_APPLICATIONS]', dir: 'Gulzar Group of Institutes', status: ['STATUS: 2022 – 2025', 'SYS_SCORE: 8.0 CGPA'] },
-  { id: 'edu3', title: '[SENIOR_SECONDARY_12TH]', dir: 'Green Land Convent School', status: ['STATUS: 2022', 'DATA_EXTRACTED: 54%'] },
-  { id: 'edu4', title: '[SECONDARY_10TH]', dir: 'Green Land Convent School', status: ['STATUS: 2020', 'DATA_EXTRACTED: 70%'] }
+  { 
+    id: 'edu1', 
+    degreeLevel: 'Masters',
+    degreeName: 'Master of Computer Applications',
+    fieldOfStudy: 'Computer Science',
+    institution: 'Chandigarh University',
+    board: '',
+    fromTo: '2023 - 2025',
+    pursuing: true,
+    yearOfPassing: '',
+    percentage: '',
+    description: 'Specializing in full-stack development and software architecture.',
+  },
+  { 
+    id: 'edu2', 
+    degreeLevel: 'Bachelors',
+    degreeName: 'Bachelor of Computer Applications',
+    fieldOfStudy: 'Computer Applications',
+    institution: 'Gulzar Group of Institutes',
+    board: '',
+    fromTo: '2020 - 2023',
+    pursuing: false,
+    yearOfPassing: '2023',
+    percentage: '8.0 CGPA',
+    description: 'Focus on core programming and application development.',
+  },
+  { 
+    id: 'edu3', 
+    degreeLevel: '12th',
+    institution: 'Green Land Convent School',
+    board: 'CBSE',
+    fromTo: '2019 - 2020',
+    pursuing: false,
+    yearOfPassing: '2020',
+    percentage: '54%',
+    description: 'Senior secondary education.',
+  },
+  { 
+    id: 'edu4', 
+    degreeLevel: '10th',
+    institution: 'Green Land Convent School',
+    board: 'CBSE',
+    fromTo: '2017 - 2018',
+    pursuing: false,
+    yearOfPassing: '2018',
+    percentage: '70%',
+    description: 'Secondary education.',
+  }
 ];
+
+export const DEFAULT_EDUCATION_SKILLS = [
+  { id: 'es1', name: 'JavaScript' }, { id: 'es2', name: 'React.js' }, { id: 'es3', name: 'Node.js' }, { id: 'es4', name: 'Express.js' }, 
+  { id: 'es5', name: 'MongoDB' }, { id: 'es6', name: 'Flutter' }, { id: 'es7', name: 'Dart' }, { id: 'es8', name: 'Java' }, 
+  { id: 'es9', name: 'Python' }, { id: 'es10', name: 'Firebase' }, { id: 'es11', name: 'REST_APIs' }, { id: 'es12', name: 'MySQL' }, 
+  { id: 'es13', name: 'HTML5' }, { id: 'es14', name: 'CSS3' }, { id: 'es15', name: 'Git' }, { id: 'es16', name: 'Postman' }
+];
+
+export const DEFAULT_EDUCATION_IMAGE = null; // null means fallback to /image.png
 
 export const DEFAULT_INTRO = {
   title: 'HARSH',
@@ -154,7 +207,20 @@ export const savePersonalProjects = (data) => setLocal('venom_personal_projects'
 export const getCertificates = () => getLocal('venom_certificates', DEFAULT_CERTIFICATES);
 export const saveCertificates = (data) => setLocal('venom_certificates', data);
 
-export const getEducation = () => getLocal('venom_education', DEFAULT_EDUCATION);
+export const getEducation = () => {
+  const data = getLocal('venom_education', DEFAULT_EDUCATION);
+  return data.map(edu => {
+    if (edu.degreeLevel) return edu;
+    // Migrate old data
+    return {
+      id: edu.id,
+      degreeLevel: 'Other',
+      degreeName: edu.title,
+      institution: edu.dir,
+      description: Array.isArray(edu.status) ? edu.status.join('\n') : edu.status
+    };
+  });
+};
 export const saveEducation = (data) => setLocal('venom_education', data);
 
 export const getIntro = () => {
@@ -169,3 +235,10 @@ export const saveQuickLinks = (data) => setLocal('venom_quick_links', data);
 
 export const getContact = () => getLocal('venom_contact', DEFAULT_CONTACT);
 export const saveContact = (data) => setLocal('venom_contact', data);
+
+export const getEducationSkills = () => getLocal('venom_education_skills', DEFAULT_EDUCATION_SKILLS);
+export const saveEducationSkills = (data) => setLocal('venom_education_skills', data);
+
+export const getEducationImage = () => getLocal('venom_education_image', DEFAULT_EDUCATION_IMAGE);
+export const saveEducationImage = (data) => setLocal('venom_education_image', data);
+

@@ -9,10 +9,64 @@ import {
   getEducation, saveEducation,
   getIntro, saveIntro,
   getQuickLinks, saveQuickLinks,
-  getContact, saveContact
+  getContact, saveContact,
+  getEducationSkills, saveEducationSkills,
+  getEducationImage, saveEducationImage
 } from '../backend/db';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { FaArrowUp, FaArrowDown, FaEdit, FaTrash } from 'react-icons/fa';
+
+const DynamicModal = ({ config, onClose }) => {
+  const [formData, setFormData] = useState(config.initialData || {});
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    config.onSave(formData);
+    onClose();
+  };
+
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div style={{ background: '#111', padding: '2rem', borderRadius: '12px', border: '2px solid var(--accent-red)', width: '90%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 0 30px rgba(226, 54, 54, 0.2)' }}>
+        <h2 style={{ marginBottom: '1.5rem', color: '#fff', fontFamily: 'var(--font-heading)' }}>{config.title}</h2>
+        <form onSubmit={handleSubmit}>
+          {config.fields.filter(f => !f.condition || f.condition(formData)).map(f => (
+            <div key={f.name} style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>{f.label}</label>
+              {f.type === 'textarea' ? (
+                <textarea name={f.name} value={formData[f.name] || ''} onChange={handleChange} required={f.required !== false} style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px', minHeight: '100px', fontFamily: 'inherit' }} />
+              ) : f.type === 'checkbox' ? (
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                   <input type="checkbox" name={f.name} checked={!!formData[f.name]} onChange={handleChange} /> 
+                   <span style={{ fontSize: '0.9rem', color: '#888' }}>Yes</span>
+                 </div>
+              ) : f.type === 'select' ? (
+                <select name={f.name} value={formData[f.name] || ''} onChange={handleChange} required={f.required !== false} style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }}>
+                  <option value="" disabled>Select an option</option>
+                  {f.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                </select>
+              ) : (
+                <input type={f.type || 'text'} name={f.name} value={formData[f.name] || ''} onChange={handleChange} required={f.required !== false} style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }} />
+              )}
+            </div>
+          ))}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
+            <button type="button" onClick={onClose} className="btn-secondary">Cancel</button>
+            <button type="submit" className="btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
@@ -30,6 +84,8 @@ export default function AdminDashboard() {
   const [intro, setIntro] = useState({ title: '', subtitle: '', bio: '' });
   const [quickLinks, setQuickLinks] = useState([]);
   const [contact, setContact] = useState([]);
+  const [educationSkills, setEducationSkills] = useState([]);
+  const [educationImage, setEducationImage] = useState(null);
 
   // Modal State
   const [modalConfig, setModalConfig] = useState(null);
@@ -48,6 +104,8 @@ export default function AdminDashboard() {
     setIntro(getIntro());
     setQuickLinks(getQuickLinks());
     setContact(getContact());
+    setEducationSkills(getEducationSkills());
+    setEducationImage(getEducationImage());
     setLoading(false);
   }, [navigate]);
 
@@ -147,12 +205,56 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleEducationImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setBgLoading(true);
+    try {
+      const blob = await removeBackground(file);
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        const img = new Image();
+        img.src = base64data;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > height) {
+            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+          } else {
+            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          const resizedBase64 = canvas.toDataURL('image/webp', 0.8);
+          setEducationImage(resizedBase64);
+          saveEducationImage(resizedBase64);
+          setBgLoading(false);
+        };
+      };
+    } catch (err) {
+      console.error("Background removal failed:", err);
+      alert("Failed to process image. Try a smaller file.");
+      setBgLoading(false);
+    }
+  };
+
   if (loading) return <div style={{ color: 'white', padding: '2rem' }}>Loading Symbiote OS...</div>;
 
   const sidebarTabs = [
     { id: 'intro', label: 'Introduction' },
     { id: 'experience', label: 'Experience' },
     { id: 'education', label: 'Education' },
+    { id: 'skills', label: 'Skills & Graphics' },
     { id: 'projects', label: 'Projects' },
     { id: 'certificates', label: 'Certificates' },
     { id: 'links', label: 'Links & Contact' }
@@ -170,38 +272,7 @@ export default function AdminDashboard() {
       
       {/* Modal Overlay */}
       {modalConfig && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <div style={{ background: '#111', padding: '2rem', borderRadius: '12px', border: '2px solid var(--accent-red)', width: '90%', maxWidth: '500px', boxShadow: '0 0 30px rgba(226, 54, 54, 0.2)' }}>
-            <h2 style={{ marginBottom: '1.5rem', color: '#fff', fontFamily: 'var(--font-heading)' }}>{modalConfig.title}</h2>
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.target);
-              const data = Object.fromEntries(formData.entries());
-              modalConfig.onSave(data);
-              setModalConfig(null);
-            }}>
-              {modalConfig.fields.map(f => (
-                <div key={f.name} style={{ marginBottom: '1rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>{f.label}</label>
-                  {f.type === 'textarea' ? (
-                    <textarea name={f.name} defaultValue={modalConfig.initialData?.[f.name] || ''} required={f.required !== false} style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px', minHeight: '100px', fontFamily: 'inherit' }} />
-                  ) : f.type === 'checkbox' ? (
-                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                       <input type="checkbox" name={f.name} defaultChecked={modalConfig.initialData?.[f.name] || false} /> 
-                       <span style={{ fontSize: '0.9rem', color: '#888' }}>Yes</span>
-                     </div>
-                  ) : (
-                    <input type={f.type || 'text'} name={f.name} defaultValue={modalConfig.initialData?.[f.name] || ''} required={f.required !== false} style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }} />
-                  )}
-                </div>
-              ))}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
-                <button type="button" onClick={() => setModalConfig(null)} className="btn-secondary">Cancel</button>
-                <button type="submit" className="btn-primary">Save Changes</button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <DynamicModal config={modalConfig} onClose={() => setModalConfig(null)} />
       )}
 
       {/* Sidebar */}
@@ -402,11 +473,22 @@ export default function AdminDashboard() {
           <div>
             <button className="btn-primary" style={{ marginBottom: '1rem' }} onClick={() => {
               openModal('Add Education', [
-                { name: 'title', label: 'Degree / Title' },
-                { name: 'dir', label: 'Institution' },
-                { name: 'status', label: 'Status (comma separated)' }
-              ], null, (data) => {
-                const updated = [...education, { id: Date.now().toString(), title: data.title, dir: data.dir, status: data.status.split(',').map(s=>s.trim()) }];
+                { name: 'degreeLevel', label: 'Degree Level', type: 'select', options: ['10th', '12th', 'Bachelors', 'Masters', 'PhD', 'Other'] },
+                { name: 'degreeName', label: 'Degree Name (e.g. BCA, B.Tech)', condition: data => ['Bachelors', 'Masters', 'Other'].includes(data?.degreeLevel) },
+                { name: 'fieldOfStudy', label: 'Field of Study / Specialization', condition: data => ['Bachelors', 'Masters', 'Other'].includes(data?.degreeLevel) },
+                { name: 'phdStatus', label: 'Ph.D Status', type: 'select', options: ['Completed', 'Submitted', 'Pursuing'], condition: data => data?.degreeLevel === 'PhD' },
+                { name: 'phdThesis', label: 'Thesis Title', condition: data => data?.degreeLevel === 'PhD' },
+                { name: 'phdResearchArea', label: 'Research Area', condition: data => data?.degreeLevel === 'PhD' },
+                { name: 'institution', label: 'Institution / College / University' },
+                { name: 'board', label: 'Board', required: false, condition: data => ['10th', '12th'].includes(data?.degreeLevel) },
+                { name: 'pursuing', label: 'Currently Pursuing?', type: 'checkbox' },
+                { name: 'fromTo', label: 'Completed At / From-To (e.g. 2020 - 2024)', condition: data => !data?.pursuing },
+                { name: 'startingYear', label: 'Starting Year', condition: data => data?.pursuing },
+                { name: 'yearOfPassing', label: 'Expected Completion Year', condition: data => data?.pursuing },
+                { name: 'percentage', label: 'Percentage / CGPA', condition: data => !data?.pursuing },
+                { name: 'description', label: 'Description', type: 'textarea' }
+              ], { degreeLevel: 'Bachelors' }, (data) => {
+                const updated = [...education, { id: Date.now().toString(), ...data }];
                 setEducation(updated); saveEducation(updated);
               });
             }}>+ Add Education</button>
@@ -417,18 +499,31 @@ export default function AdminDashboard() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       {renderActionButtons(setEducation, saveEducation, education, edu, index)}
                       <div>
-                        <strong>{edu.title} - {edu.dir}</strong>
-                        <p style={{ color: '#888', fontSize: '0.9rem', margin: 0 }}>{edu.status.join(', ')}</p>
+                        <strong>{edu.degreeLevel === 'PhD' ? `PhD in ${edu.phdResearchArea || ''}` : edu.degreeName || edu.degreeLevel} - {edu.institution}</strong>
+                        <p style={{ color: '#888', fontSize: '0.9rem', margin: 0 }}>
+                          {edu.pursuing ? `${edu.startingYear || ''} - Present` : edu.fromTo} • {edu.percentage} {edu.pursuing && '(Pursuing)'}
+                        </p>
                       </div>
                     </div>
                     <div>
                       <button onClick={() => {
                         openModal('Edit Education', [
-                          { name: 'title', label: 'Degree / Title' },
-                          { name: 'dir', label: 'Institution' },
-                          { name: 'status', label: 'Status (comma separated)' }
-                        ], { ...edu, status: edu.status.join(', ') }, (data) => {
-                          const updated = education.map(i => i.id === edu.id ? { ...i, title: data.title, dir: data.dir, status: data.status.split(',').map(s=>s.trim()) } : i);
+                          { name: 'degreeLevel', label: 'Degree Level', type: 'select', options: ['10th', '12th', 'Bachelors', 'Masters', 'PhD', 'Other'] },
+                          { name: 'degreeName', label: 'Degree Name (e.g. BCA, B.Tech)', condition: data => ['Bachelors', 'Masters', 'Other'].includes(data?.degreeLevel) },
+                          { name: 'fieldOfStudy', label: 'Field of Study / Specialization', condition: data => ['Bachelors', 'Masters', 'Other'].includes(data?.degreeLevel) },
+                          { name: 'phdStatus', label: 'Ph.D Status', type: 'select', options: ['Completed', 'Submitted', 'Pursuing'], condition: data => data?.degreeLevel === 'PhD' },
+                          { name: 'phdThesis', label: 'Thesis Title', condition: data => data?.degreeLevel === 'PhD' },
+                          { name: 'phdResearchArea', label: 'Research Area', condition: data => data?.degreeLevel === 'PhD' },
+                          { name: 'institution', label: 'Institution / College / University' },
+                          { name: 'board', label: 'Board', required: false, condition: data => ['10th', '12th'].includes(data?.degreeLevel) },
+                          { name: 'pursuing', label: 'Currently Pursuing?', type: 'checkbox' },
+                          { name: 'fromTo', label: 'Completed At / From-To (e.g. 2020 - 2024)', condition: data => !data?.pursuing },
+                          { name: 'startingYear', label: 'Starting Year', condition: data => data?.pursuing },
+                          { name: 'yearOfPassing', label: 'Expected Completion Year', condition: data => data?.pursuing },
+                          { name: 'percentage', label: 'Percentage / CGPA', condition: data => !data?.pursuing },
+                          { name: 'description', label: 'Description', type: 'textarea' }
+                        ], edu, (data) => {
+                          const updated = education.map(i => i.id === edu.id ? { ...i, ...data } : i);
                           setEducation(updated); saveEducation(updated);
                         });
                       }} style={{ color: '#4ade80', background: 'none', border: 'none', cursor: 'pointer', marginRight: '1rem' }} title="Edit"><FaEdit /></button>
@@ -437,6 +532,59 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* --- SKILLS & GRAPHICS TAB --- */}
+        {activeTab === 'skills' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div style={{ background: '#111', padding: '2rem', borderRadius: '8px', border: '1px solid #333' }}>
+              <h3 style={{ marginBottom: '1rem', color: 'var(--accent-red)' }}>Education Background Image</h3>
+              <p style={{ color: '#888', marginBottom: '1rem' }}>Upload an image. The background will be removed automatically.</p>
+              <input type="file" accept="image/*" onChange={handleEducationImageUpload} disabled={bgLoading} style={{ display: 'block', marginBottom: '1rem' }} />
+              {bgLoading && <p style={{ color: '#eab308' }}>Processing image and removing background... (This might take a few seconds)</p>}
+              
+              {educationImage && !bgLoading && (
+                <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '1rem' }}>
+                  <img src={educationImage} alt="Education Preview" style={{ maxWidth: '300px', maxHeight: '300px', objectFit: 'contain', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }} />
+                  <button onClick={() => {
+                    setEducationImage(null);
+                    saveEducationImage(null);
+                  }} style={{ color: 'red', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FaTrash /> Remove Custom Image</button>
+                </div>
+              )}
+            </div>
+
+            <div style={{ background: '#111', padding: '2rem', borderRadius: '8px', border: '1px solid #333' }}>
+              <h3 style={{ marginBottom: '1rem', color: 'var(--accent-red)' }}>Orbiting Skills</h3>
+              <button className="btn-primary" style={{ marginBottom: '1rem' }} onClick={() => {
+                openModal('Add Skill', [
+                  { name: 'name', label: 'Skill Name (e.g. React.js)' }
+                ], null, (data) => {
+                  const updated = [...educationSkills, { id: Date.now().toString(), name: data.name }];
+                  setEducationSkills(updated); saveEducationSkills(updated);
+                });
+              }}>+ Add Skill</button>
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                {educationSkills.map((skill, index) => (
+                  <div key={skill.id} style={{ background: '#222', padding: '0.5rem 1rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '1rem', border: '1px solid #4ade80' }}>
+                    <strong style={{ color: '#fff' }}>{skill.name}</strong>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button onClick={() => {
+                        openModal('Edit Skill', [
+                          { name: 'name', label: 'Skill Name' }
+                        ], skill, (data) => {
+                          const updated = educationSkills.map(s => s.id === skill.id ? { ...s, name: data.name } : s);
+                          setEducationSkills(updated); saveEducationSkills(updated);
+                        });
+                      }} style={{ color: '#4ade80', background: 'none', border: 'none', cursor: 'pointer' }}><FaEdit /></button>
+                      <button onClick={() => handleDelete(setEducationSkills, saveEducationSkills, educationSkills, skill.id)} style={{ color: 'red', background: 'none', border: 'none', cursor: 'pointer' }}><FaTrash /></button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
