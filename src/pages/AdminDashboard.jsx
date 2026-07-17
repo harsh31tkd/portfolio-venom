@@ -326,6 +326,18 @@ export default function AdminDashboard() {
                         index
                       )}
                       <button onClick={() => {
+                        openModal('Edit Button', [
+                          { name: 'label', label: 'Button Label (e.g. View Projects)' },
+                          { name: 'link', label: 'Link URL or Path' },
+                          { name: 'isExternal', label: 'Is External Link?', type: 'checkbox' }
+                        ], btn, (data) => {
+                          const updatedBtns = intro.buttons.map(i => i.id === btn.id ? { ...i, label: data.label, link: data.link, isExternal: data.isExternal === 'on' } : i);
+                          const newIntro = { ...intro, buttons: updatedBtns };
+                          setIntro(newIntro);
+                          saveIntro(newIntro);
+                        });
+                      }} style={{ color: '#4ade80', background: 'none', border: 'none', cursor: 'pointer' }} title="Edit"><FaEdit /></button>
+                      <button onClick={() => {
                         handleDelete(
                           (updatedBtns) => { const newIntro = { ...intro, buttons: updatedBtns }; setIntro(newIntro); saveIntro(newIntro); },
                           () => {},
