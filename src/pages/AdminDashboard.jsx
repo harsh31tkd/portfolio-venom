@@ -16,7 +16,7 @@ import {
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { FaArrowUp, FaArrowDown, FaEdit, FaTrash } from 'react-icons/fa';
 
-export const calculateDuration = (fromDate, toDate, isCurrent) => {
+const calculateDuration = (fromDate, toDate, isCurrent) => {
   if (!fromDate) return '';
   const start = new Date(fromDate);
   const end = isCurrent || !toDate ? new Date() : new Date(toDate);
@@ -40,7 +40,7 @@ export const calculateDuration = (fromDate, toDate, isCurrent) => {
   return result.join(' ');
 };
 
-export const formatDate = (dateString) => {
+const formatDate = (dateString) => {
   if (!dateString) return '';
   const date = new Date(dateString);
   if (isNaN(date.getTime())) return dateString;

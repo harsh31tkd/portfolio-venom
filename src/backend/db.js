@@ -50,19 +50,19 @@ export const DEFAULT_COMPANY_PROJECTS = [
     id: 'cp1',
     title: 'Oscorp Security System',
     tech: 'C++, Python, React',
-    desc:  'Architected biometric security protocols for the main laboratory. Full-stack integration with real-time threat detection dashboards.',
+    desc: 'Architected biometric security protocols for the main laboratory. Full-stack integration with real-time threat detection dashboards.',
   },
   {
     id: 'cp2',
     title: 'Daily Bugle Web Portal',
     tech: 'Next.js, Node.js, MongoDB',
-    desc:  'Developed a high-traffic news portal with real-time article updates, role-based access, and SSR optimisation.',
+    desc: 'Developed a high-traffic news portal with real-time article updates, role-based access, and SSR optimisation.',
   },
   {
     id: 'cp3',
     title: 'Stark Industries API',
     tech: 'Java, Spring Boot, AWS',
-    desc:  'Built scalable REST APIs for inventory management, handling thousands of concurrent requests with CI/CD pipelines.',
+    desc: 'Built scalable REST APIs for inventory management, handling thousands of concurrent requests with CI/CD pipelines.',
   },
 ];
 
@@ -71,25 +71,25 @@ export const DEFAULT_PERSONAL_PROJECTS = [
     id: 'pp1',
     title: 'Plant Disease Detection',
     tech: 'Python, TensorFlow, OpenCV',
-    desc:  'End-to-end ML pipeline for identifying crop diseases from leaf images — data collection, augmentation, model training and evaluation.',
+    desc: 'End-to-end ML pipeline for identifying crop diseases from leaf images — data collection, augmentation, model training and evaluation.',
   },
   {
     id: 'pp2',
     title: 'Subject Manager App',
     tech: 'Android, Java, SQLite',
-    desc:  'Native Android app with full CRUD operations, offline-first architecture, and a clean Material Design UI for academic management.',
+    desc: 'Native Android app with full CRUD operations, offline-first architecture, and a clean Material Design UI for academic management.',
   },
   {
     id: 'pp3',
     title: 'Spotify Clone',
     tech: 'HTML, CSS, JavaScript',
-    desc:  "Pixel-perfect frontend recreation of Spotify's 2025 web interface, complete with music playback controls and playlist management.",
+    desc: "Pixel-perfect frontend recreation of Spotify's 2025 web interface, complete with music playback controls and playlist management.",
   },
   {
     id: 'pp4',
     title: 'Netflix Clone',
     tech: 'HTML, CSS, JavaScript',
-    desc:  'Responsive Netflix landing page clone with dynamic hero banners, category carousels, and smooth hover animations.',
+    desc: 'Responsive Netflix landing page clone with dynamic hero banners, category carousels, and smooth hover animations.',
   },
 ];
 
@@ -108,8 +108,8 @@ export const DEFAULT_CERTIFICATES = [
 ];
 
 export const DEFAULT_EDUCATION = [
-  { 
-    id: 'edu1', 
+  {
+    id: 'edu1',
     degreeLevel: 'Masters',
     degreeName: 'Master of Computer Applications',
     fieldOfStudy: 'Computer Science',
@@ -121,8 +121,8 @@ export const DEFAULT_EDUCATION = [
     percentage: '',
     description: 'Specializing in full-stack development and software architecture.',
   },
-  { 
-    id: 'edu2', 
+  {
+    id: 'edu2',
     degreeLevel: 'Bachelors',
     degreeName: 'Bachelor of Computer Applications',
     fieldOfStudy: 'Computer Applications',
@@ -134,8 +134,8 @@ export const DEFAULT_EDUCATION = [
     percentage: '8.0 CGPA',
     description: 'Focus on core programming and application development.',
   },
-  { 
-    id: 'edu3', 
+  {
+    id: 'edu3',
     degreeLevel: '12th',
     institution: 'Green Land Convent School',
     board: 'CBSE',
@@ -145,8 +145,8 @@ export const DEFAULT_EDUCATION = [
     percentage: '54%',
     description: 'Senior secondary education.',
   },
-  { 
-    id: 'edu4', 
+  {
+    id: 'edu4',
     degreeLevel: '10th',
     institution: 'Green Land Convent School',
     board: 'CBSE',
@@ -159,9 +159,9 @@ export const DEFAULT_EDUCATION = [
 ];
 
 export const DEFAULT_EDUCATION_SKILLS = [
-  { id: 'es1', name: 'JavaScript' }, { id: 'es2', name: 'React.js' }, { id: 'es3', name: 'Node.js' }, { id: 'es4', name: 'Express.js' }, 
-  { id: 'es5', name: 'MongoDB' }, { id: 'es6', name: 'Flutter' }, { id: 'es7', name: 'Dart' }, { id: 'es8', name: 'Java' }, 
-  { id: 'es9', name: 'Python' }, { id: 'es10', name: 'Firebase' }, { id: 'es11', name: 'REST_APIs' }, { id: 'es12', name: 'MySQL' }, 
+  { id: 'es1', name: 'JavaScript' }, { id: 'es2', name: 'React.js' }, { id: 'es3', name: 'Node.js' }, { id: 'es4', name: 'Express.js' },
+  { id: 'es5', name: 'MongoDB' }, { id: 'es6', name: 'Flutter' }, { id: 'es7', name: 'Dart' }, { id: 'es8', name: 'Java' },
+  { id: 'es9', name: 'Python' }, { id: 'es10', name: 'Firebase' }, { id: 'es11', name: 'REST_APIs' }, { id: 'es12', name: 'MySQL' },
   { id: 'es13', name: 'HTML5' }, { id: 'es14', name: 'CSS3' }, { id: 'es15', name: 'Git' }, { id: 'es16', name: 'Postman' }
 ];
 

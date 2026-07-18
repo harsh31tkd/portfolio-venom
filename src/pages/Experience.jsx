@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { useWindowSize } from 'react-use';
 import { GiSpiderMask, GiSkullCrossedBones, GiPumpkinLantern, GiBatwingEmblem, GiSuckeredTentacle, GiLightningStorm, GiNinjaMask, GiAlienStare, GiShield, GiHammerDrop, GiIronMask, GiVampireCape } from 'react-icons/gi';
 import { getExperience } from '../backend/db';
 
-const generatePath = (total) => {
+const generatePath = (total, isMobile) => {
   if (total === 0) return '';
   let d = `M 50,0 `;
   for (let i = 0; i < total; i++) {
-    const isLeft = i % 2 === 0;
-    const cx = isLeft ? 30 : 70;
+    const isLeft = isMobile ? false : (i % 2 === 0);
+    const cx = isMobile ? 0 : (isLeft ? 30 : 70); // cx=0 on mobile to hit 25vw
     const cy = ((i + 0.5) / total) * 100;
     const endY = ((i + 1) / total) * 100;
     d += `Q ${cx},${cy} 50,${endY} `;
@@ -16,7 +17,7 @@ const generatePath = (total) => {
   return d;
 };
 
-export const calculateDuration = (fromDate, toDate, isCurrent) => {
+const calculateDuration = (fromDate, toDate, isCurrent) => {
   if (!fromDate) return '';
   const start = new Date(fromDate);
   const end = isCurrent || !toDate ? new Date() : new Date(toDate);
@@ -34,7 +35,7 @@ export const calculateDuration = (fromDate, toDate, isCurrent) => {
   return result.join(' ');
 };
 
-export const formatDate = (dateString) => {
+const formatDate = (dateString) => {
   if (!dateString) return '';
   const date = new Date(dateString);
   if (isNaN(date.getTime())) return dateString;
@@ -64,7 +65,7 @@ const parseMarkdownLink = (text) => {
   return parts.length > 0 ? parts : text;
 };
 
-const ScrollLinkedItem = ({ exp, index, total, scrollSpring }) => {
+const ScrollLinkedItem = ({ exp, index, total, scrollSpring, isMobile }) => {
   const topPercentage = ((index + 0.5) / total) * 100;
   
   // Use topPercentage for animation threshold instead of just index
@@ -72,7 +73,7 @@ const ScrollLinkedItem = ({ exp, index, total, scrollSpring }) => {
   const opacity = useTransform(scrollSpring, [Math.max(0, threshold - 0.15), threshold], [0, 1]);
   const scale = useTransform(scrollSpring, [Math.max(0, threshold - 0.15), threshold], [0.8, 1]);
   
-  const isLeft = index % 2 === 0;
+  const isLeft = isMobile ? false : (index % 2 === 0);
   const xLeft = useTransform(scrollSpring, [Math.max(0, threshold - 0.15), threshold], [-50, 0]);
   const xRight = useTransform(scrollSpring, [Math.max(0, threshold - 0.15), threshold], [50, 0]);
 
@@ -88,9 +89,9 @@ const ScrollLinkedItem = ({ exp, index, total, scrollSpring }) => {
     }}>
       <motion.div 
         style={{ 
-          width: '40vw', // Exact width so edge is at 40vw and 60vw
+          width: isMobile ? '75vw' : '40vw', // Exact width so edge is at 40vw/60vw (desktop) or 25vw (mobile)
           background: isLeft ? 'rgba(15,15,20,0.95)' : 'linear-gradient(135deg, rgba(20,10,30,0.95), rgba(0,0,0,0.98))', 
-          padding: '3rem', 
+          padding: '2.5rem', 
           borderRadius: '16px', 
           border: isLeft ? '3px solid #E23636' : '4px solid #a855f7', 
           boxShadow: isLeft ? '10px 10px 0 #000' : '0 0 40px rgba(168,85,247,0.4), inset 0 0 20px rgba(168,85,247,0.2)', 
@@ -162,10 +163,17 @@ const ScrollLinkedItem = ({ exp, index, total, scrollSpring }) => {
         </p>
       )}
       
-      <div style={{ background: isLeft ? 'none' : 'rgba(0,0,0,0.5)', padding: isLeft ? '0' : '1.5rem', borderRadius: '8px', borderLeft: isLeft ? 'none' : '4px solid var(--accent-red)' }}>
+      <div className="exp-scroll" style={{ 
+        background: isLeft ? 'none' : 'rgba(0,0,0,0.5)', 
+        padding: isLeft ? '0' : '1.5rem', 
+        borderRadius: '8px', 
+        borderLeft: isLeft ? 'none' : '4px solid var(--accent-red)',
+        maxHeight: '220px',
+        overflowY: 'auto'
+      }}>
         <ul style={{ color: '#e4e4e7', paddingLeft: '1.5rem', lineHeight: '1.8', fontSize: '1.15rem' }}>
           {exp.points && exp.points.map((point, i) => (
-            <li key={i}>{parseMarkdownLink(point)}</li>
+            <li key={i} style={{ marginBottom: '0.5rem' }}>{parseMarkdownLink(point)}</li>
           ))}
         </ul>
       </div>
@@ -177,6 +185,8 @@ const ScrollLinkedItem = ({ exp, index, total, scrollSpring }) => {
 export default function Experience() {
   const containerRef = useRef(null);
   const [experiences, setExperiences] = useState([]);
+  const { width: windowWidth } = useWindowSize();
+  const isMobile = windowWidth < 768;
   
   // Track scrolling within this container to animate the map trail
   const { scrollYProgress } = useScroll({
@@ -255,7 +265,7 @@ export default function Experience() {
           >
             {/* The Background Trail (Faded) */}
             <path 
-              d={generatePath(experiences.length)}
+              d={generatePath(experiences.length, isMobile)}
               stroke="rgba(226, 54, 54, 0.2)" 
               strokeWidth="4" 
               strokeDasharray="4 4" 
@@ -264,7 +274,7 @@ export default function Experience() {
             />
             {/* The Animated Glowing Trail */}
             <motion.path 
-              d={generatePath(experiences.length)}
+              d={generatePath(experiences.length, isMobile)}
               stroke="#a855f7" 
               strokeWidth="6" 
               strokeDasharray="4 4" 
@@ -281,6 +291,7 @@ export default function Experience() {
               index={index}
               total={experiences.length}
               scrollSpring={scrollSpring}
+              isMobile={isMobile}
             />
           ))}
 
