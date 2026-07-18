@@ -16,6 +16,37 @@ import {
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { FaArrowUp, FaArrowDown, FaEdit, FaTrash } from 'react-icons/fa';
 
+export const calculateDuration = (fromDate, toDate, isCurrent) => {
+  if (!fromDate) return '';
+  const start = new Date(fromDate);
+  const end = isCurrent || !toDate ? new Date() : new Date(toDate);
+  
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) return '';
+  
+  let months = (end.getFullYear() - start.getFullYear()) * 12;
+  months -= start.getMonth();
+  months += end.getMonth();
+  months += 1; // Inclusive of current month
+  
+  if (months <= 0) return '';
+  
+  const years = Math.floor(months / 12);
+  const remainingMonths = months % 12;
+  
+  let result = [];
+  if (years > 0) result.push(`${years} yr${years > 1 ? 's' : ''}`);
+  if (remainingMonths > 0) result.push(`${remainingMonths} mo${remainingMonths > 1 ? 's' : ''}`);
+  
+  return result.join(' ');
+};
+
+export const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return dateString;
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+};
+
 const DynamicModal = ({ config, onClose }) => {
   const [formData, setFormData] = useState(config.initialData || {});
 
@@ -54,7 +85,23 @@ const DynamicModal = ({ config, onClose }) => {
                   {f.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
               ) : (
-                <input type={f.type || 'text'} name={f.name} value={formData[f.name] || ''} onChange={handleChange} required={f.required !== false} style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }} />
+                <input 
+                  type={f.type || 'text'} 
+                  name={f.name} 
+                  value={formData[f.name] || ''} 
+                  onChange={handleChange} 
+                  required={f.required !== false} 
+                  style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }} 
+                  onClick={(e) => {
+                    if (f.type === 'date' || f.type === 'month') {
+                      try {
+                        e.target.showPicker();
+                      } catch (err) {
+                        // Ignore if not supported
+                      }
+                    }
+                  }}
+                />
               )}
             </div>
           ))}
@@ -64,6 +111,136 @@ const DynamicModal = ({ config, onClose }) => {
           </div>
         </form>
       </div>
+    </div>
+  );
+};
+
+const DraggableSkillPreview = ({ skills, setSkills, saveSkills, imageSrc }) => {
+  const [draggingId, setDraggingId] = useState(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  
+  const handlePointerDown = (e, id) => {
+    e.preventDefault();
+    setDraggingId(id);
+  };
+
+  useEffect(() => {
+    if (!draggingId) return;
+
+    const handlePointerMove = (e) => {
+      const container = document.getElementById('skill-preview-container');
+      if (!container) return;
+      
+      const rect = container.getBoundingClientRect();
+      let x = ((e.clientX - rect.left) / rect.width) * 100;
+      let y = ((e.clientY - rect.top) / rect.height) * 100;
+      
+      // Clamp values
+      x = Math.max(0, Math.min(100, x));
+      y = Math.max(0, Math.min(100, y));
+
+      setSkills(prev => prev.map(s => s.id === draggingId ? { ...s, x, y } : s));
+    };
+
+    const handlePointerUp = () => {
+      setDraggingId(null);
+      // Save to localStorage when drag ends
+      setSkills(prev => {
+        saveSkills(prev);
+        return prev;
+      });
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+    };
+  }, [draggingId, setSkills, saveSkills]);
+
+  return (
+    <div 
+      id="skill-preview-container"
+      style={{ 
+        position: isFullscreen ? 'fixed' : 'relative',
+        top: isFullscreen ? 0 : 'auto',
+        left: isFullscreen ? 0 : 'auto',
+        width: isFullscreen ? '100vw' : '100%', 
+        maxWidth: isFullscreen ? 'none' : '600px', 
+        height: isFullscreen ? '100vh' : '500px', 
+        margin: isFullscreen ? 0 : '0 auto',
+        border: isFullscreen ? 'none' : '2px dashed #444',
+        borderRadius: isFullscreen ? '0' : '8px',
+        overflow: 'hidden',
+        background: '#050505',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        touchAction: 'none',
+        zIndex: isFullscreen ? 99999 : 1
+      }}
+    >
+      <button 
+        onClick={() => setIsFullscreen(!isFullscreen)}
+        style={{
+          position: 'absolute',
+          top: '1rem',
+          right: '1rem',
+          zIndex: 100000,
+          background: 'var(--accent-red)',
+          color: '#fff',
+          border: 'none',
+          padding: '0.5rem 1rem',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          fontWeight: 'bold'
+        }}
+      >
+        {isFullscreen ? 'Exit Full Screen' : 'Full Screen Editor'}
+      </button>
+
+      {/* Background Image */}
+      <img 
+        src={imageSrc || '/image.png'} 
+        alt="Education Preview" 
+        style={{ 
+          width: '100%', 
+          maxWidth: isFullscreen ? '600px' : '400px', 
+          objectFit: 'contain', 
+          zIndex: 10,
+          pointerEvents: 'none',
+          opacity: 0.8
+        }} 
+      />
+
+      {/* Skills */}
+      {skills.map((skill) => (
+        <div
+          key={skill.id}
+          onPointerDown={(e) => handlePointerDown(e, skill.id)}
+          style={{
+            position: 'absolute',
+            left: skill.x !== undefined ? `${skill.x}%` : '50%',
+            top: skill.y !== undefined ? `${skill.y}%` : '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: skill.zIndex || 50,
+            background: draggingId === skill.id ? '#a855f7' : '#4ade80',
+            color: '#000',
+            padding: '0.25rem 0.75rem',
+            borderRadius: '20px',
+            cursor: draggingId === skill.id ? 'grabbing' : 'grab',
+            userSelect: 'none',
+            fontWeight: 'bold',
+            boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+            transition: draggingId === skill.id ? 'none' : 'background 0.2s',
+            fontFamily: 'monospace'
+          }}
+        >
+          {`<${skill.name} />`}
+        </div>
+      ))}
     </div>
   );
 };
@@ -433,29 +610,46 @@ export default function AdminDashboard() {
                 { name: 'role', label: 'Role' },
                 { name: 'company', label: 'Company' },
                 { name: 'link', label: 'Company URL (Optional)', required: false },
-                { name: 'appLink', label: 'App URL (Optional)', required: false }
+                { name: 'appLink', label: 'App URL (Optional)', required: false },
+                { name: 'fromDate', label: 'From Date', type: 'date' },
+                { name: 'isCurrent', label: 'Currently working here?', type: 'checkbox' },
+                { name: 'toDate', label: 'To Date', type: 'date', required: false, condition: data => !data?.isCurrent },
+                { name: 'description', label: 'Description (Bullet Points - one per line)', type: 'textarea' }
               ], null, (data) => {
-                const updated = [...experience, { id: Date.now().toString(), ...data, points: [], isLeft: experience.length % 2 === 0 }];
+                const points = (data.description || '').split('\n').filter(p => p.trim() !== '');
+                const updated = [...experience, { id: Date.now().toString(), ...data, points, isLeft: experience.length % 2 === 0 }];
                 setExperience(updated); saveExperience(updated);
               });
             }}>+ Add Experience</button>
             <div style={{ display: 'grid', gap: '1rem' }}>
               {experience.map((exp, index) => (
                 <div key={exp.id} style={{ background: '#111', padding: '1rem', borderRadius: '8px', borderLeft: '4px solid var(--accent-blue)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
                       {renderActionButtons(setExperience, saveExperience, experience, exp, index)}
-                      <strong>{exp.role} - {exp.company}</strong>
+                      <div>
+                        <strong>{exp.role} - {exp.company}</strong>
+                        <p style={{ color: '#888', fontSize: '0.9rem', margin: '0.25rem 0 0 0' }}>
+                          {formatDate(exp.fromDate)} - {exp.isCurrent ? 'Present' : formatDate(exp.toDate)} 
+                          {exp.fromDate && <span style={{ color: '#a855f7', marginLeft: '0.5rem' }}>({calculateDuration(exp.fromDate, exp.toDate, exp.isCurrent)})</span>}
+                        </p>
+                      </div>
                     </div>
                     <div>
                       <button onClick={() => {
+                        const initialData = { ...exp, description: exp.points?.join('\n') || '' };
                         openModal('Edit Experience', [
                           { name: 'role', label: 'Role' },
                           { name: 'company', label: 'Company' },
                           { name: 'link', label: 'Company URL (Optional)', required: false },
-                          { name: 'appLink', label: 'App URL (Optional)', required: false }
-                        ], exp, (data) => {
-                          const updated = experience.map(i => i.id === exp.id ? { ...i, ...data } : i);
+                          { name: 'appLink', label: 'App URL (Optional)', required: false },
+                          { name: 'fromDate', label: 'From Date', type: 'date' },
+                          { name: 'isCurrent', label: 'Currently working here?', type: 'checkbox' },
+                          { name: 'toDate', label: 'To Date', type: 'date', required: false, condition: data => !data?.isCurrent },
+                          { name: 'description', label: 'Description (Bullet Points - one per line)', type: 'textarea' }
+                        ], initialData, (data) => {
+                          const points = (data.description || '').split('\n').filter(p => p.trim() !== '');
+                          const updated = experience.map(i => i.id === exp.id ? { ...i, ...data, points } : i);
                           setExperience(updated); saveExperience(updated);
                         });
                       }} style={{ color: '#4ade80', background: 'none', border: 'none', cursor: 'pointer', marginRight: '1rem' }} title="Edit"><FaEdit /></button>
@@ -557,12 +751,26 @@ export default function AdminDashboard() {
             </div>
 
             <div style={{ background: '#111', padding: '2rem', borderRadius: '8px', border: '1px solid #333' }}>
+              <h3 style={{ marginBottom: '1rem', color: 'var(--accent-red)' }}>Visual Skill Positioning</h3>
+              <p style={{ color: '#888', marginBottom: '1rem' }}>Drag the skills to position them around the image. Click the edit button below to change Z-Index.</p>
+              
+              <DraggableSkillPreview 
+                skills={educationSkills} 
+                setSkills={setEducationSkills} 
+                saveSkills={saveEducationSkills} 
+                imageSrc={educationImage} 
+              />
+            </div>
+
+            <div style={{ background: '#111', padding: '2rem', borderRadius: '8px', border: '1px solid #333' }}>
               <h3 style={{ marginBottom: '1rem', color: 'var(--accent-red)' }}>Orbiting Skills</h3>
               <button className="btn-primary" style={{ marginBottom: '1rem' }} onClick={() => {
                 openModal('Add Skill', [
-                  { name: 'name', label: 'Skill Name (e.g. React.js)' }
-                ], null, (data) => {
-                  const updated = [...educationSkills, { id: Date.now().toString(), name: data.name }];
+                  { name: 'name', label: 'Skill Name (e.g. React.js)' },
+                  { name: 'zIndexOption', label: 'Z-Index Position', type: 'select', options: ['Behind Image', 'Over Image'] }
+                ], { zIndexOption: 'Over Image' }, (data) => {
+                  const zIndex = data.zIndexOption === 'Behind Image' ? 1 : 50;
+                  const updated = [...educationSkills, { id: Date.now().toString(), name: data.name, zIndex }];
                   setEducationSkills(updated); saveEducationSkills(updated);
                 });
               }}>+ Add Skill</button>
@@ -574,9 +782,11 @@ export default function AdminDashboard() {
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                       <button onClick={() => {
                         openModal('Edit Skill', [
-                          { name: 'name', label: 'Skill Name' }
-                        ], skill, (data) => {
-                          const updated = educationSkills.map(s => s.id === skill.id ? { ...s, name: data.name } : s);
+                          { name: 'name', label: 'Skill Name' },
+                          { name: 'zIndexOption', label: 'Z-Index Position', type: 'select', options: ['Behind Image', 'Over Image'] }
+                        ], { ...skill, zIndexOption: skill.zIndex === 1 ? 'Behind Image' : 'Over Image' }, (data) => {
+                          const zIndex = data.zIndexOption === 'Behind Image' ? 1 : 50;
+                          const updated = educationSkills.map(s => s.id === skill.id ? { ...s, name: data.name, zIndex } : s);
                           setEducationSkills(updated); saveEducationSkills(updated);
                         });
                       }} style={{ color: '#4ade80', background: 'none', border: 'none', cursor: 'pointer' }}><FaEdit /></button>

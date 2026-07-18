@@ -129,7 +129,17 @@ export default function Education() {
   }, []);
 
   // Calculate random floating positions for the hacked packets around Venom
-  const getPacketStyle = (idx) => {
+  const getPacketStyle = (skill, idx) => {
+    if (skill.x !== undefined && skill.y !== undefined) {
+      return {
+        left: `${skill.x}%`,
+        top: `${skill.y}%`,
+        zIndex: skill.zIndex || 50,
+        transform: 'translate(-50%, -50%)',
+        animationDelay: `${idx * 0.3}s`
+      };
+    }
+
     const positions = [
       { top: '5%', left: '10%' }, { top: '12%', right: '5%' },
       { top: '25%', left: '-5%' }, { top: '35%', right: '-10%' },
@@ -145,6 +155,7 @@ export default function Education() {
     
     return {
       ...pos,
+      zIndex: 50,
       animationDelay: `${idx * 0.3}s`
     };
   };
@@ -174,7 +185,7 @@ export default function Education() {
             <motion.img 
               src={imageSrc} 
               alt="Venom Hack"
-              style={{ width: '100%', maxWidth: '600px', filter: 'drop-shadow(0 0 40px rgba(74,222,128,0.4)) hue-rotate(-20deg) brightness(1.2)', zIndex: 2 }}
+              style={{ width: '100%', maxWidth: '600px', filter: 'drop-shadow(0 0 40px rgba(74,222,128,0.4)) hue-rotate(-20deg) brightness(1.2)', zIndex: 10 }}
               animate={{ y: [-15, 15, -15] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
             />
@@ -182,13 +193,13 @@ export default function Education() {
             {/* Hacked Packet Skills Orbiting */}
             {skills.map((skill, idx) => (
               <motion.div 
-                key={idx}
+                key={skill.id || idx}
                 className="hacked-packet"
-                style={getPacketStyle(idx)}
+                style={getPacketStyle(skill, idx)}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.1 }}
-                whileHover={{ scale: 1.2, zIndex: 50, background: '#4ade80', color: '#000', boxShadow: '0 0 30px #4ade80' }}
+                whileHover={{ scale: 1.2, zIndex: 99, background: '#4ade80', color: '#000', boxShadow: '0 0 30px #4ade80' }}
               >
                 {`<${skill.name || skill}/>`}
               </motion.div>

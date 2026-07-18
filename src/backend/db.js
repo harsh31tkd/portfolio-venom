@@ -21,6 +21,9 @@ export const DEFAULT_EXPERIENCE = [
       'Developed T-Shirt E-Commerce admin dashboard and storefront.',
       'Built "FlowerNGift" full-stack MERN e-commerce application.'
     ],
+    fromDate: '2023-01',
+    toDate: '2023-06',
+    isCurrent: false,
     isLeft: true
   },
   {
@@ -35,6 +38,9 @@ export const DEFAULT_EXPERIENCE = [
       'Built Admin, Teacher, and Executive dashboards with role-based access.',
       'Integrated push notifications and complex verification workflows.'
     ],
+    fromDate: '2023-07',
+    toDate: '',
+    isCurrent: true,
     isLeft: false
   }
 ];
