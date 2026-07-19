@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GiSpiderWeb, GiStarMedal } from 'react-icons/gi';
+import { 
+  GiStarMedal, GiSpiderWeb, GiTrophyCup, GiRibbonMedal, GiAchievement, 
+  GiDiploma, GiShield, GiCrown, GiScrollQuill, GiMedal, 
+  GiTargetPrize, GiDiamondTrophy, GiTrophy, GiPodium, GiSwordClash 
+} from 'react-icons/gi';
 import { getCertificates } from '../backend/db';
+
+const iconMap = {
+  GiStarMedal, GiSpiderWeb, GiTrophyCup, GiRibbonMedal, GiAchievement, 
+  GiDiploma, GiShield, GiCrown, GiScrollQuill, GiMedal, 
+  GiTargetPrize, GiDiamondTrophy, GiTrophy, GiPodium, GiSwordClash
+};
 
 import certGNA from '../assets/hackthon and trainning certificates/WhatsApp Image 2026-07-14 at 7.08.48 PM.jpeg';
 import certQuantum from '../assets/hackthon and trainning certificates/WhatsApp Image 2026-07-14 at 6.55.58 PM.jpeg';
@@ -25,7 +35,7 @@ export default function Certificates() {
   }, []);
 
   return (
-    <div style={{ position: 'relative', minHeight: '100vh', width: '100vw', paddingTop: '4rem', paddingBottom: '8rem' }}>
+    <div style={{ position: 'relative', minHeight: '100vh', width: '100%', paddingTop: '4rem', paddingBottom: '8rem' }}>
       
       <div className="container" style={{ position: 'relative', zIndex: 10, maxWidth: '1200px', margin: '0 auto' }}>
         
@@ -54,10 +64,12 @@ export default function Certificates() {
               onClick={() => setSelectedCert(cert)}
             >
               <div className="cert-icon-wrapper">
-                {idx % 2 === 0 ? <GiSpiderWeb size={45} /> : <GiStarMedal size={45} />}
+                {cert.icon && iconMap[cert.icon] 
+                  ? React.createElement(iconMap[cert.icon], { size: 45 })
+                  : (idx % 2 === 0 ? <GiSpiderWeb size={45} /> : <GiStarMedal size={45} />)}
               </div>
               <h3 className="cert-title">{cert.title}</h3>
-              <p className="cert-date">{cert.date}</p>
+              <p className="cert-date">{cert.month && cert.year ? `${cert.month} ${cert.year}` : cert.date}</p>
             </motion.div>
           ))}
         </div>
@@ -87,12 +99,44 @@ export default function Certificates() {
                   &times;
                 </button>
               </div>
-              <div className="modal-body">
-                {selectedCert.type === 'pdf' ? (
-                  <iframe src={`${selectedCert.fileUrl}#toolbar=0`} title={selectedCert.title} />
-                ) : (
-                  <img src={selectedCert.fileUrl} alt={selectedCert.title} />
-                )}
+              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxHeight: '75vh', overflowY: 'auto', alignItems: 'stretch', justifyContent: 'flex-start' }}>
+                
+                {/* 1. Description Section */}
+                <div className="custom-scrollbar" style={{ flexShrink: 0, padding: '1.5rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', borderLeft: '5px solid var(--accent-red)', border: '1px solid #333', backdropFilter: 'blur(10px)', maxHeight: '180px', overflowY: 'auto' }}>
+                  <h4 style={{ color: 'var(--accent-red)', margin: '0 0 0.75rem 0', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '1px', fontFamily: 'var(--font-heading)' }}>Description</h4>
+                  <p style={{ color: '#ffffff', fontSize: '1.15rem', margin: 0, lineHeight: 1.6, whiteSpace: 'pre-wrap', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
+                    {selectedCert.desc || "No description provided. You can add one in the Admin Dashboard!"}
+                  </p>
+                </div>
+
+                <div style={{ flexShrink: 0, width: '100%', marginTop: '1rem' }}>
+                  {selectedCert.type === 'pdf' ? (
+                    <iframe src={`${selectedCert.fileUrl}#toolbar=0`} title={selectedCert.title} style={{ width: '100%', height: '70vh', border: 'none', borderRadius: '8px' }} />
+                  ) : (
+                    <img src={selectedCert.fileUrl} alt={selectedCert.title} style={{ width: '100%', height: 'auto', maxHeight: '70vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 0 20px rgba(0,0,0,0.2)' }} />
+                  )}
+                </div>
+
+                {/* 3. Memory Vault Section */}
+                {(() => {
+                  const photos = selectedCert.memoryPhotoUrls || (selectedCert.memoryPhotoUrl ? [selectedCert.memoryPhotoUrl] : []);
+                  if (photos.length === 0) return null;
+                  
+                  return (
+                    <div style={{ flexShrink: 0, margin: '1rem 0' }}>
+                      <h4 style={{ color: '#fff', marginBottom: '1rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem', fontFamily: 'var(--font-heading)' }}>Memory Vault</h4>
+                      <div className="custom-scrollbar" style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', padding: '1.5rem 0.5rem', scrollbarWidth: 'thin', scrollbarColor: 'var(--accent-red) #222', background: 'rgba(0,0,0,0.3)', borderRadius: '12px', border: '1px solid #333' }}>
+                        {photos.map((url, idx) => (
+                           <div key={idx} style={{ flex: '0 0 auto', padding: '0.75rem', background: '#fff', borderRadius: '4px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', transform: `rotate(${idx % 2 === 0 ? -2 : 3}deg)`, transition: 'transform 0.3s ease', cursor: 'pointer', maxWidth: '280px' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05) rotate(0deg)'} onMouseLeave={e => e.currentTarget.style.transform = `scale(1) rotate(${idx % 2 === 0 ? -2 : 3}deg)`}>
+                             <img src={url} alt={`Memory ${idx + 1}`} style={{ width: '100%', height: '180px', objectFit: 'cover', border: '1px solid #ddd' }} />
+                             <p style={{ color: '#000', textAlign: 'center', margin: '0.75rem 0 0 0', fontFamily: 'cursive', fontSize: '1.1rem', fontWeight: 'bold' }}>{photos.length === 1 ? 'Tournament Memory' : `Memory ${idx + 1}`}</p>
+                           </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
               </div>
             </motion.div>
           </motion.div>

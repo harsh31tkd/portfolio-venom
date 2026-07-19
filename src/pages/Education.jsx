@@ -161,7 +161,7 @@ export default function Education() {
   };
 
   return (
-    <div style={{ position: 'relative', minHeight: '100vh', width: '100vw', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', minHeight: '100vh', width: '100%', overflow: 'hidden' }}>
       
 
       <div className="container" style={{ position: 'relative', paddingTop: '4rem', paddingBottom: '8rem', zIndex: 1 }}>

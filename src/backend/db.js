@@ -49,20 +49,44 @@ export const DEFAULT_COMPANY_PROJECTS = [
   {
     id: 'cp1',
     title: 'Oscorp Security System',
+    companyName: 'Oscorp Industries',
+    icon: '🔒',
     tech: 'C++, Python, React',
     desc: 'Architected biometric security protocols for the main laboratory. Full-stack integration with real-time threat detection dashboards.',
+    workflow: 'Data capture from biometric scanners -> Processing via Python backend -> Display on React dashboard.',
+    whatIDid: 'Implemented real-time websockets for threat detection\nOptimized facial recognition processing times',
+    projectLink: 'https://github.com/example/oscorp',
+    appLink: '',
+    liveLink: 'https://oscorp.example.com',
+    status: 'Completed'
   },
   {
     id: 'cp2',
     title: 'Daily Bugle Web Portal',
+    companyName: 'The Daily Bugle',
+    icon: '🌐',
     tech: 'Next.js, Node.js, MongoDB',
     desc: 'Developed a high-traffic news portal with real-time article updates, role-based access, and SSR optimisation.',
+    workflow: 'Journalists submit articles -> Editors approve -> Published to static CDN via Next.js ISR.',
+    whatIDid: 'Setup Next.js ISR for fast load times\nBuilt custom CMS for editors',
+    projectLink: '',
+    appLink: '',
+    liveLink: 'https://dailybugle.example.com',
+    status: 'Maintained'
   },
   {
     id: 'cp3',
     title: 'Stark Industries API',
+    companyName: 'Stark Industries',
+    icon: '⚙️',
     tech: 'Java, Spring Boot, AWS',
     desc: 'Built scalable REST APIs for inventory management, handling thousands of concurrent requests with CI/CD pipelines.',
+    workflow: 'AWS API Gateway routing -> Spring Boot Microservices -> DynamoDB',
+    whatIDid: 'Configured AWS CI/CD pipelines\nCreated automated testing suite',
+    projectLink: '',
+    appLink: '',
+    liveLink: '',
+    status: 'Handed over to company'
   },
 ];
 
@@ -70,41 +94,90 @@ export const DEFAULT_PERSONAL_PROJECTS = [
   {
     id: 'pp1',
     title: 'Plant Disease Detection',
+    companyName: 'Personal',
+    icon: '🌿',
     tech: 'Python, TensorFlow, OpenCV',
     desc: 'End-to-end ML pipeline for identifying crop diseases from leaf images — data collection, augmentation, model training and evaluation.',
+    workflow: 'Image preprocessing -> CNN model prediction -> Output classification',
+    whatIDid: 'Collected and augmented dataset\nTrained CNN model\nBuilt inference script',
+    projectLink: 'https://github.com/example/plant-disease',
+    appLink: '',
+    liveLink: '',
+    status: 'Completed'
   },
   {
     id: 'pp2',
     title: 'Subject Manager App',
+    companyName: 'Personal',
+    icon: '📱',
     tech: 'Android, Java, SQLite',
     desc: 'Native Android app with full CRUD operations, offline-first architecture, and a clean Material Design UI for academic management.',
+    workflow: 'Local SQLite storage -> Native UI components -> Sync manager',
+    whatIDid: 'Designed Material UI\nImplemented SQLite database',
+    projectLink: 'https://github.com/example/subject-manager',
+    appLink: 'https://play.google.com/store/apps/details?id=example',
+    liveLink: '',
+    status: 'Maintained'
   },
   {
     id: 'pp3',
     title: 'Spotify Clone',
+    companyName: 'Personal',
+    icon: '🎵',
     tech: 'HTML, CSS, JavaScript',
     desc: "Pixel-perfect frontend recreation of Spotify's 2025 web interface, complete with music playback controls and playlist management.",
+    workflow: 'Static HTML/CSS -> JS DOM manipulation -> HTML5 Audio API',
+    whatIDid: 'Created pixel-perfect UI\nImplemented audio playback',
+    projectLink: 'https://github.com/example/spotify-clone',
+    appLink: '',
+    liveLink: 'https://spotify-clone.example.com',
+    status: 'Completed'
   },
   {
     id: 'pp4',
     title: 'Netflix Clone',
+    companyName: 'Personal',
+    icon: '🎬',
     tech: 'HTML, CSS, JavaScript',
     desc: 'Responsive Netflix landing page clone with dynamic hero banners, category carousels, and smooth hover animations.',
+    workflow: 'TMDB API fetching -> Vanilla JS rendering -> CSS Grid/Flexbox layouts',
+    whatIDid: 'Integrated TMDB API\nBuilt responsive carousels',
+    projectLink: 'https://github.com/example/netflix-clone',
+    appLink: '',
+    liveLink: 'https://netflix-clone.example.com',
+    status: 'Completed'
   },
 ];
 
+export const DEFAULT_CASUAL_PROJECTS = [
+  {
+    id: 'cas1',
+    title: 'Discord Bot',
+    companyName: 'Casual',
+    icon: '🤖',
+    tech: 'Node.js, Discord.js',
+    desc: 'A fun discord bot for my private server that plays music and tells jokes.',
+    workflow: 'Discord API events -> Command parser -> Audio streaming',
+    whatIDid: 'Built music queue system\nIntegrated joke API',
+    projectLink: 'https://github.com/example/discord-bot',
+    appLink: '',
+    liveLink: '',
+    status: 'Currently working on it'
+  }
+];
+
 export const DEFAULT_CERTIFICATES = [
-  { id: 'cert1', title: 'GNA Hackathon 3.0', date: 'Mar 2025', type: 'jpg', fileUrl: certGNA },
-  { id: 'cert2', title: 'Next Quantum 2.0 Hackathon', date: 'Apr 2025', type: 'jpg', fileUrl: certQuantum },
-  { id: 'cert3', title: 'Summer Training in Web Development', date: 'Jun - Jul 2024', type: 'jpg', fileUrl: certSummer },
-  { id: 'cert4', title: 'Training / Internship', date: '2024', type: 'pdf', fileUrl: certHarsh },
-  { id: 'cert5', title: 'Decision Making', date: 'Certified', type: 'pdf', fileUrl: certDecision },
-  { id: 'cert6', title: 'Digital Intelligence', date: 'Certified', type: 'pdf', fileUrl: certDigital },
-  { id: 'cert7', title: 'Innovation & Creativity', date: 'Certified', type: 'pdf', fileUrl: certInnovation },
-  { id: 'cert8', title: 'Presentation Skills', date: 'Certified', type: 'pdf', fileUrl: certPresentation },
-  { id: 'cert9', title: 'Strategy Planning & Execution', date: 'Certified', type: 'pdf', fileUrl: certStrategy },
-  { id: 'cert10', title: 'Online Certification 1', date: 'Certified', type: 'jpg', fileUrl: certExtra1 },
-  { id: 'cert11', title: 'Online Certification 2', date: 'Certified', type: 'jpg', fileUrl: certExtra2 }
+  { id: 'cert1', title: 'GNA Hackathon 3.0', month: 'March', year: '2025', icon: 'GiTrophyCup', desc: 'Secured first place in the regional hackathon.', type: 'jpg', fileUrl: certGNA, memoryPhotoUrls: [] },
+  { id: 'cert2', title: 'Next Quantum 2.0 Hackathon', month: 'April', year: '2025', icon: 'GiStarMedal', desc: 'Participated in a 48-hour coding sprint.', type: 'jpg', fileUrl: certQuantum, memoryPhotoUrls: [] },
+  { id: 'cert3', title: 'Summer Training in Web Development', month: 'July', year: '2024', icon: 'GiDiploma', desc: 'Completed intensive full-stack training.', type: 'jpg', fileUrl: certSummer, memoryPhotoUrls: [] },
+  { id: 'cert4', title: 'Training / Internship', month: 'August', year: '2024', icon: 'GiSpiderWeb', desc: 'Completed internship program.', type: 'pdf', fileUrl: certHarsh, memoryPhotoUrls: [] },
+  { id: 'cert5', title: 'Decision Making', month: 'Unknown', year: '2023', icon: 'GiRibbonMedal', desc: 'Online certification course.', type: 'pdf', fileUrl: certDecision, memoryPhotoUrls: [] },
+  { id: 'cert6', title: 'Digital Intelligence', month: 'Unknown', year: '2023', icon: 'GiRibbonMedal', desc: 'Online certification course.', type: 'pdf', fileUrl: certDigital, memoryPhotoUrls: [] },
+  { id: 'cert7', title: 'Innovation & Creativity', month: 'Unknown', year: '2023', icon: 'GiRibbonMedal', desc: 'Online certification course.', type: 'pdf', fileUrl: certInnovation, memoryPhotoUrls: [] },
+  { id: 'cert8', title: 'Presentation Skills', month: 'Unknown', year: '2023', icon: 'GiRibbonMedal', desc: 'Online certification course.', type: 'pdf', fileUrl: certPresentation, memoryPhotoUrls: [] },
+  { id: 'cert9', title: 'Strategy Planning & Execution', month: 'Unknown', year: '2023', icon: 'GiRibbonMedal', desc: 'Online certification course.', type: 'pdf', fileUrl: certStrategy, memoryPhotoUrls: [] },
+  { id: 'cert10', title: 'Online Certification 1', month: 'Unknown', year: '2023', icon: 'GiRibbonMedal', desc: 'Online certification course.', type: 'jpg', fileUrl: certExtra1, memoryPhotoUrls: [] },
+  { id: 'cert11', title: 'Online Certification 2', month: 'Unknown', year: '2023', icon: 'GiRibbonMedal', desc: 'Online certification course.', type: 'jpg', fileUrl: certExtra2, memoryPhotoUrls: [] }
 ];
 
 export const DEFAULT_EDUCATION = [
@@ -210,6 +283,9 @@ export const saveCompanyProjects = (data) => setLocal('venom_company_projects', 
 export const getPersonalProjects = () => getLocal('venom_personal_projects', DEFAULT_PERSONAL_PROJECTS);
 export const savePersonalProjects = (data) => setLocal('venom_personal_projects', data);
 
+export const getCasualProjects = () => getLocal('venom_casual_projects', DEFAULT_CASUAL_PROJECTS);
+export const saveCasualProjects = (data) => setLocal('venom_casual_projects', data);
+
 export const getCertificates = () => getLocal('venom_certificates', DEFAULT_CERTIFICATES);
 export const saveCertificates = (data) => setLocal('venom_certificates', data);
 
@@ -247,4 +323,31 @@ export const saveEducationSkills = (data) => setLocal('venom_education_skills', 
 
 export const getEducationImage = () => getLocal('venom_education_image', DEFAULT_EDUCATION_IMAGE);
 export const saveEducationImage = (data) => setLocal('venom_education_image', data);
+
+export const getResume = () => getLocal('venom_resume', certHarsh);
+export const saveResume = (data) => setLocal('venom_resume', data);
+
+export const openPdfInNewTab = (base64Data) => {
+  if (!base64Data) return;
+  if (!base64Data.startsWith('data:')) {
+    window.open(base64Data, '_blank');
+    return;
+  }
+  try {
+    const base64Parts = base64Data.split(',');
+    const mimeType = base64Parts[0].match(/:(.*?);/)[1];
+    const raw = window.atob(base64Parts[1]);
+    const rawLength = raw.length;
+    const uInt8Array = new Uint8Array(rawLength);
+    for (let i = 0; i < rawLength; ++i) {
+      uInt8Array[i] = raw.charCodeAt(i);
+    }
+    const blob = new Blob([uInt8Array], { type: mimeType });
+    const blobURL = URL.createObjectURL(blob);
+    window.open(blobURL, '_blank');
+  } catch (e) {
+    console.error("Failed to open PDF in new tab", e);
+    window.open(base64Data, '_blank');
+  }
+};
 

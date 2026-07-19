@@ -20,7 +20,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={{ position: 'relative', minHeight: 'calc(100vh - 80px)', overflow: 'hidden', width: '100vw' }}>
+    <div style={{ position: 'relative', minHeight: 'calc(100vh - 80px)', overflow: 'hidden', width: '100%' }}>
       
       {/* --- FLOATING CHARACTERS / WEAPONS ON LEFT AND RIGHT --- */}
       
@@ -83,7 +83,7 @@ export default function Home() {
 
       {/* --- HERO CONTENT --- */}
       <div className="container">
-        <section className="hero" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center' }}>
+        <section className="hero" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', padding: '2rem 0' }}>
           
           <div style={{ position: 'relative', margin: '0 auto', maxWidth: '950px', width: '100%', zIndex: 10 }}>
             
@@ -107,16 +107,7 @@ export default function Home() {
                 <img 
                   src={intro.bgImage || "/venom-accurate-transparent.png"} 
                   alt="Hero background" 
-                  style={{ 
-                    position: 'absolute', 
-                    top: '50%', 
-                    left: '50%', 
-                    transform: 'translate(-50%, -50%)', 
-                    opacity: 0.25, 
-                    zIndex: 0, 
-                    height: '110%', 
-                    objectFit: 'contain'
-                  }} 
+                  className="hero-bg-img"
                 />
               </div>
 

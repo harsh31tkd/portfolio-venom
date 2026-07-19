@@ -205,7 +205,7 @@ export default function Experience() {
   }, []);
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', minHeight: '100vh', overflow: 'hidden' }}>
       
       {/* Floating Superhero & Villain Background Icons */}
       <motion.div className="floating-icon" style={{ position: 'absolute', top: '12%', left: '4%', zIndex: -2, color: 'rgba(226, 54, 54, 0.4)' }} animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}>

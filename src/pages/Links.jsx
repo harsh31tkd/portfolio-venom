@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { getQuickLinks } from '../backend/db';
+import { getQuickLinks, getResume, openPdfInNewTab } from '../backend/db';
 
 export default function Links() {
   const [quickLinks, setQuickLinks] = useState([]);
@@ -42,7 +42,13 @@ export default function Links() {
               </Link>
             ) : (
               <a 
-                href={link.url}
+                href={link.title.toLowerCase().includes('resume') ? '#' : link.url}
+                onClick={(e) => {
+                  if (link.title.toLowerCase().includes('resume')) {
+                    e.preventDefault();
+                    openPdfInNewTab(getResume());
+                  }
+                }}
                 className="btn-primary"
                 style={{ 
                   display: 'block', 

@@ -5,13 +5,15 @@ import {
   getExperience, saveExperience,
   getCompanyProjects, saveCompanyProjects,
   getPersonalProjects, savePersonalProjects,
+  getCasualProjects, saveCasualProjects,
   getCertificates, saveCertificates,
   getEducation, saveEducation,
   getIntro, saveIntro,
   getQuickLinks, saveQuickLinks,
   getContact, saveContact,
   getEducationSkills, saveEducationSkills,
-  getEducationImage, saveEducationImage
+  getEducationImage, saveEducationImage,
+  getResume, saveResume
 } from '../backend/db';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { FaArrowUp, FaArrowDown, FaEdit, FaTrash } from 'react-icons/fa';
@@ -45,6 +47,53 @@ const formatDate = (dateString) => {
   const date = new Date(dateString);
   if (isNaN(date.getTime())) return dateString;
   return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+};
+
+const compressImage = (file, maxSizeMB = 1) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        let quality = 0.8;
+        let dataUrl = canvas.toDataURL('image/jpeg', quality);
+        
+        while ((dataUrl.length * 3) / 4 > maxSizeMB * 1024 * 1024 && quality > 0.1) {
+          quality -= 0.1;
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        resolve(dataUrl);
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
 };
 
 const DynamicModal = ({ config, onClose }) => {
@@ -84,6 +133,89 @@ const DynamicModal = ({ config, onClose }) => {
                   <option value="" disabled>Select an option</option>
                   {f.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
+              ) : f.type === 'file-upload' ? (
+                <div>
+                  <input 
+                    type="file" 
+                    multiple={f.multiple}
+                    accept={f.accept || "image/*,application/pdf"}
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files);
+                      if (files.length > 0) {
+                        try {
+                          if (f.multiple) {
+                            let currentArray = Array.isArray(formData[f.name]) ? formData[f.name] : [];
+                            const availableSlots = (f.maxFiles || 10) - currentArray.length;
+                            const filesToProcess = files.slice(0, availableSlots);
+                            if (files.length > availableSlots) {
+                              alert(`You can only upload up to ${f.maxFiles || 10} files. Extra files were ignored.`);
+                            }
+                            const processed = await Promise.all(filesToProcess.map(async file => {
+                              if (file.type.startsWith('image/')) {
+                                return await compressImage(file, 1);
+                              } else {
+                                return new Promise(resolve => {
+                                  const reader = new FileReader();
+                                  reader.readAsDataURL(file);
+                                  reader.onload = () => resolve(reader.result);
+                                });
+                              }
+                            }));
+                            setFormData(prev => ({ ...prev, [f.name]: [...(Array.isArray(prev[f.name]) ? prev[f.name] : []), ...processed] }));
+                          } else {
+                            const file = files[0];
+                            if (file.type.startsWith('image/')) {
+                              const compressedBase64 = await compressImage(file, 1);
+                              setFormData(prev => ({ ...prev, [f.name]: compressedBase64 }));
+                            } else {
+                              const reader = new FileReader();
+                              reader.readAsDataURL(file);
+                              reader.onload = () => {
+                                setFormData(prev => ({ ...prev, [f.name]: reader.result }));
+                              };
+                            }
+                          }
+                        } catch (err) {
+                          console.error("File processing failed", err);
+                          alert("Failed to process file.");
+                        }
+                      }
+                    }} 
+                    style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }} 
+                  />
+                  {f.multiple ? (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      {Array.isArray(formData[f.name]) && formData[f.name].map((url, idx) => (
+                        <div key={idx} style={{ position: 'relative' }}>
+                           {url.startsWith('data:image') ? (
+                             <img src={url} alt="Preview" style={{ height: '60px', width: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #333' }} />
+                           ) : url.startsWith('data:application/pdf') ? (
+                             <div style={{ height: '60px', width: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222', borderRadius: '4px', fontSize: '0.7rem' }}>PDF</div>
+                           ) : (
+                             <div style={{ height: '60px', width: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222', borderRadius: '4px', fontSize: '0.6rem' }}>File</div>
+                           )}
+                           <button type="button" onClick={() => {
+                             const newArr = [...formData[f.name]];
+                             newArr.splice(idx, 1);
+                             setFormData(prev => ({ ...prev, [f.name]: newArr }));
+                           }} style={{ position: 'absolute', top: -5, right: -5, background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>X</button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <>
+                      {typeof formData[f.name] === 'string' && formData[f.name].startsWith('data:image') && (
+                        <img src={formData[f.name]} alt="Preview" style={{ marginTop: '0.5rem', maxHeight: '100px', borderRadius: '4px', border: '1px solid #333' }} />
+                      )}
+                      {typeof formData[f.name] === 'string' && formData[f.name].startsWith('data:application/pdf') && (
+                         <p style={{fontSize: '0.9rem', color: '#4ade80', marginTop: '0.5rem'}}>📄 PDF Ready</p>
+                      )}
+                      {typeof formData[f.name] === 'string' && !formData[f.name].startsWith('data:') && formData[f.name] && (
+                         <p style={{fontSize: '0.8rem', color: '#aaa', marginTop: '0.5rem'}}>{formData[f.name]}</p>
+                      )}
+                    </>
+                  )}
+                </div>
               ) : (
                 <input 
                   type={f.type || 'text'} 
@@ -245,6 +377,20 @@ const DraggableSkillPreview = ({ skills, setSkills, saveSkills, imageSrc }) => {
   );
 };
 
+const PROJECT_FORM_FIELDS = [
+  { name: 'title', label: 'Title' },
+  { name: 'companyName', label: 'Company / Context Name' },
+  { name: 'icon', label: 'Icon', type: 'select', options: ['💻', '📱', '🎮', '🌐', '🚀', '🛠️', '🧬', '⚙️', '🌿', '🎵', '🎬', '📚', '⚡', '🔥', '📊', '🔒', '💡', '🏆', '🧪', '🔮', '🤖', '👾'] },
+  { name: 'tech', label: 'Tech Stack (comma separated)' },
+  { name: 'desc', label: 'Description', type: 'textarea' },
+  { name: 'workflow', label: 'Workflow / How it works', type: 'textarea' },
+  { name: 'whatIDid', label: 'What I have done (Bullets separated by new line)', type: 'textarea' },
+  { name: 'projectLink', label: 'Project Link (GitHub/Repo)' },
+  { name: 'appLink', label: 'App Link (Play Store / App Store)' },
+  { name: 'liveLink', label: 'Live / Hosted Link' },
+  { name: 'status', label: 'Status', type: 'select', options: ['Completed', 'Currently working on it', 'Partially stopped', 'Handed over to company', 'Maintained', 'Archived'] },
+];
+
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [bgLoading, setBgLoading] = useState(false);
@@ -256,6 +402,7 @@ export default function AdminDashboard() {
   const [experience, setExperience] = useState([]);
   const [companyProjects, setCompanyProjects] = useState([]);
   const [personalProjects, setPersonalProjects] = useState([]);
+  const [casualProjects, setCasualProjects] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [education, setEducation] = useState([]);
   const [intro, setIntro] = useState({ title: '', subtitle: '', bio: '' });
@@ -263,6 +410,7 @@ export default function AdminDashboard() {
   const [contact, setContact] = useState([]);
   const [educationSkills, setEducationSkills] = useState([]);
   const [educationImage, setEducationImage] = useState(null);
+  const [resume, setResume] = useState('');
 
   // Modal State
   const [modalConfig, setModalConfig] = useState(null);
@@ -276,6 +424,7 @@ export default function AdminDashboard() {
     setExperience(getExperience());
     setCompanyProjects(getCompanyProjects());
     setPersonalProjects(getPersonalProjects());
+    setCasualProjects(getCasualProjects());
     setCertificates(getCertificates());
     setEducation(getEducation());
     setIntro(getIntro());
@@ -283,6 +432,7 @@ export default function AdminDashboard() {
     setContact(getContact());
     setEducationSkills(getEducationSkills());
     setEducationImage(getEducationImage());
+    setResume(getResume());
     setLoading(false);
   }, [navigate]);
 
@@ -434,7 +584,8 @@ export default function AdminDashboard() {
     { id: 'skills', label: 'Skills & Graphics' },
     { id: 'projects', label: 'Projects' },
     { id: 'certificates', label: 'Certificates' },
-    { id: 'links', label: 'Links & Contact' }
+    { id: 'links', label: 'Links & Contact' },
+    { id: 'resume', label: 'My Resume' }
   ];
 
   const renderActionButtons = (setter, saver, state, item, index) => (
@@ -801,15 +952,13 @@ export default function AdminDashboard() {
 
         {/* --- PROJECTS TAB --- */}
         {activeTab === 'projects' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+            
+            {/* COMPANY PROJECTS */}
             <div>
               <h3 style={{ marginBottom: '1rem', color: 'var(--accent-red)' }}>Company Projects</h3>
               <button className="btn-primary" style={{ marginBottom: '1rem', padding: '0.5rem 1rem', fontSize: '0.9rem' }} onClick={() => {
-                openModal('Add Company Project', [
-                  { name: 'title', label: 'Title' },
-                  { name: 'tech', label: 'Tech Stack' },
-                  { name: 'desc', label: 'Description', type: 'textarea' }
-                ], null, (data) => {
+                openModal('Add Company Project', PROJECT_FORM_FIELDS, null, (data) => {
                   const updated = [...companyProjects, { id: Date.now().toString(), ...data }];
                   setCompanyProjects(updated); saveCompanyProjects(updated);
                 });
@@ -820,15 +969,11 @@ export default function AdminDashboard() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         {renderActionButtons(setCompanyProjects, saveCompanyProjects, companyProjects, p, index)}
-                        <strong>{p.title}</strong> 
+                        <strong>{p.icon} {p.title}</strong> 
                       </div>
                       <div>
                         <button onClick={() => {
-                          openModal('Edit Company Project', [
-                            { name: 'title', label: 'Title' },
-                            { name: 'tech', label: 'Tech Stack' },
-                            { name: 'desc', label: 'Description', type: 'textarea' }
-                          ], p, (data) => {
+                          openModal('Edit Company Project', PROJECT_FORM_FIELDS, p, (data) => {
                             const updated = companyProjects.map(i => i.id === p.id ? { ...i, ...data } : i);
                             setCompanyProjects(updated); saveCompanyProjects(updated);
                           });
@@ -841,14 +986,12 @@ export default function AdminDashboard() {
                 ))}
               </div>
             </div>
+
+            {/* PERSONAL PROJECTS */}
             <div>
               <h3 style={{ marginBottom: '1rem', color: 'var(--accent-blue)' }}>Personal Projects</h3>
               <button className="btn-secondary" style={{ marginBottom: '1rem', padding: '0.5rem 1rem', fontSize: '0.9rem' }} onClick={() => {
-                openModal('Add Personal Project', [
-                  { name: 'title', label: 'Title' },
-                  { name: 'tech', label: 'Tech Stack' },
-                  { name: 'desc', label: 'Description', type: 'textarea' }
-                ], null, (data) => {
+                openModal('Add Personal Project', PROJECT_FORM_FIELDS, null, (data) => {
                   const updated = [...personalProjects, { id: Date.now().toString(), ...data }];
                   setPersonalProjects(updated); savePersonalProjects(updated);
                 });
@@ -859,15 +1002,11 @@ export default function AdminDashboard() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         {renderActionButtons(setPersonalProjects, savePersonalProjects, personalProjects, p, index)}
-                        <strong>{p.title}</strong> 
+                        <strong>{p.icon} {p.title}</strong> 
                       </div>
                       <div>
                         <button onClick={() => {
-                          openModal('Edit Personal Project', [
-                            { name: 'title', label: 'Title' },
-                            { name: 'tech', label: 'Tech Stack' },
-                            { name: 'desc', label: 'Description', type: 'textarea' }
-                          ], p, (data) => {
+                          openModal('Edit Personal Project', PROJECT_FORM_FIELDS, p, (data) => {
                             const updated = personalProjects.map(i => i.id === p.id ? { ...i, ...data } : i);
                             setPersonalProjects(updated); savePersonalProjects(updated);
                           });
@@ -880,6 +1019,40 @@ export default function AdminDashboard() {
                 ))}
               </div>
             </div>
+
+            {/* CASUAL PROJECTS */}
+            <div>
+              <h3 style={{ marginBottom: '1rem', color: '#4ade80' }}>Casual Projects</h3>
+              <button className="btn-primary" style={{ marginBottom: '1rem', padding: '0.5rem 1rem', fontSize: '0.9rem', background: '#22c55e', borderColor: '#22c55e' }} onClick={() => {
+                openModal('Add Casual Project', PROJECT_FORM_FIELDS, null, (data) => {
+                  const updated = [...casualProjects, { id: Date.now().toString(), ...data }];
+                  setCasualProjects(updated); saveCasualProjects(updated);
+                });
+              }}>+ Add Casual Project</button>
+              <div style={{ display: 'grid', gap: '1rem' }}>
+                {casualProjects.map((p, index) => (
+                  <div key={p.id} style={{ background: '#111', padding: '1rem', border: '1px solid #333' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        {renderActionButtons(setCasualProjects, saveCasualProjects, casualProjects, p, index)}
+                        <strong>{p.icon} {p.title}</strong> 
+                      </div>
+                      <div>
+                        <button onClick={() => {
+                          openModal('Edit Casual Project', PROJECT_FORM_FIELDS, p, (data) => {
+                            const updated = casualProjects.map(i => i.id === p.id ? { ...i, ...data } : i);
+                            setCasualProjects(updated); saveCasualProjects(updated);
+                          });
+                        }} style={{ color: '#4ade80', background: 'none', border: 'none', cursor: 'pointer', marginRight: '0.5rem' }}><FaEdit /></button>
+                        <button onClick={() => handleDelete(setCasualProjects, saveCasualProjects, casualProjects, p.id)} style={{ color:'red', background:'none', border:'none', cursor: 'pointer' }}><FaTrash /></button>
+                      </div>
+                    </div>
+                    <small style={{ color: '#888', display: 'block', marginTop: '0.5rem' }}>{p.tech}</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         )}
 
@@ -889,9 +1062,13 @@ export default function AdminDashboard() {
             <button className="btn-primary" style={{ marginBottom: '1rem' }} onClick={() => {
               openModal('Add Certificate', [
                 { name: 'title', label: 'Title' },
-                { name: 'date', label: 'Date' },
+                { name: 'month', label: 'Month', type: 'select', options: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Unknown'] },
+                { name: 'year', label: 'Year' },
+                { name: 'icon', label: 'Icon', type: 'select', options: ['GiStarMedal', 'GiSpiderWeb', 'GiTrophyCup', 'GiRibbonMedal', 'GiAchievement', 'GiDiploma', 'GiShield', 'GiCrown', 'GiScrollQuill', 'GiMedal', 'GiTargetPrize', 'GiDiamondTrophy', 'GiTrophy', 'GiPodium', 'GiSwordClash'] },
+                { name: 'desc', label: 'Small Description', type: 'textarea' },
                 { name: 'type', label: 'Type (jpg/pdf)' },
-                { name: 'fileUrl', label: 'File URL / Path' }
+                { name: 'fileUrl', label: 'Certificate File (PDF or JPG)', type: 'file-upload' },
+                { name: 'memoryPhotoUrls', label: 'Memory Photos (Up to 10)', type: 'file-upload', multiple: true, maxFiles: 10, accept: 'image/*', required: false }
               ], null, (data) => {
                 const updated = [...certificates, { id: Date.now().toString(), ...data }];
                 setCertificates(updated); saveCertificates(updated);
@@ -912,9 +1089,13 @@ export default function AdminDashboard() {
                       <button onClick={() => {
                         openModal('Edit Certificate', [
                           { name: 'title', label: 'Title' },
-                          { name: 'date', label: 'Date' },
+                          { name: 'month', label: 'Month', type: 'select', options: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Unknown'] },
+                          { name: 'year', label: 'Year' },
+                          { name: 'icon', label: 'Icon', type: 'select', options: ['GiStarMedal', 'GiSpiderWeb', 'GiTrophyCup', 'GiRibbonMedal', 'GiAchievement', 'GiDiploma', 'GiShield', 'GiCrown', 'GiScrollQuill', 'GiMedal', 'GiTargetPrize', 'GiDiamondTrophy', 'GiTrophy', 'GiPodium', 'GiSwordClash'] },
+                          { name: 'desc', label: 'Small Description', type: 'textarea' },
                           { name: 'type', label: 'Type (jpg/pdf)' },
-                          { name: 'fileUrl', label: 'File URL / Path' }
+                          { name: 'fileUrl', label: 'Certificate File (PDF or JPG)', type: 'file-upload' },
+                          { name: 'memoryPhotoUrls', label: 'Memory Photos (Up to 10)', type: 'file-upload', multiple: true, maxFiles: 10, accept: 'image/*', required: false }
                         ], cert, (data) => {
                           const updated = certificates.map(i => i.id === cert.id ? { ...i, ...data } : i);
                           setCertificates(updated); saveCertificates(updated);
@@ -1016,6 +1197,50 @@ export default function AdminDashboard() {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* --- RESUME TAB --- */}
+        {activeTab === 'resume' && (
+          <div>
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+              <div style={{ flex: 1, background: '#111', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333' }}>
+                <h3 style={{ color: 'var(--accent-red)', marginBottom: '1rem' }}>Upload / Update Resume</h3>
+                <input 
+                  type="file" 
+                  accept="application/pdf"
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      try {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = () => {
+                          setResume(reader.result);
+                          saveResume(reader.result);
+                          alert("Resume uploaded successfully!");
+                        };
+                      } catch (err) {
+                        console.error("Resume upload failed", err);
+                        alert("Failed to upload resume.");
+                      }
+                    }
+                  }} 
+                  style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }} 
+                />
+              </div>
+            </div>
+
+            {resume ? (
+              <div style={{ background: '#111', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333' }}>
+                <h3 style={{ color: 'var(--accent-blue)', marginBottom: '1.5rem' }}>Current Resume Preview</h3>
+                <iframe src={resume} title="Resume Preview" style={{ width: '100%', height: '600px', border: 'none', borderRadius: '8px' }} />
+              </div>
+            ) : (
+              <div style={{ background: '#111', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', textAlign: 'center', color: '#888' }}>
+                No resume uploaded yet.
+              </div>
+            )}
           </div>
         )}
 

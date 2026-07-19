@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, Menu, X } from 'lucide-react';
 import { GiSpiderWeb, GiCobweb } from 'react-icons/gi';
+import { getResume } from '../backend/db';
 import './Navbar.css';
 
 const DeadpoolLogo = ({ size = 32 }) => (
@@ -17,6 +19,16 @@ const DeadpoolLogo = ({ size = 32 }) => (
 export default function Navbar() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
+  const [resumeUrl, setResumeUrl] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setResumeUrl(getResume());
+  }, [location.pathname]);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <nav className="navbar">
@@ -51,18 +63,61 @@ export default function Navbar() {
           <DeadpoolLogo size={36} />
           <span><span className="text-red">H</span>ARSH<span className="text-blue">.</span></span>
         </Link>
-        <div className="nav-links">
+
+        {/* Hamburger Toggle (Mobile Only) */}
+        {!isAdmin && (
+          <button 
+            className="mobile-nav-toggle" 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle Navigation Menu"
+          >
+            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
+        )}
+
+        {/* Mobile menu overlay background */}
+        <div className={`mobile-overlay-bg ${isMobileMenuOpen ? 'visible' : ''}`} onClick={() => setIsMobileMenuOpen(false)} />
+
+        <div className={`nav-links ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           {!isAdmin ? (
             <>
+              <Link to="/" className={`nav-link mobile-only-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
               <Link to="/experience" className={`nav-link ${location.pathname === '/experience' ? 'active' : ''}`}>Experience</Link>
               <Link to="/education" className={`nav-link ${location.pathname === '/education' ? 'active' : ''}`}>Education</Link>
               <Link to="/projects" className={`nav-link ${location.pathname === '/projects' ? 'active' : ''}`}>Projects</Link>
               <Link to="/certificates" className={`nav-link ${location.pathname === '/certificates' ? 'active' : ''}`}>Certificates</Link>
               <Link to="/links" className={`nav-link ${location.pathname === '/links' ? 'active' : ''}`}>Links</Link>
               <Link to="/contact" className={`nav-link ${location.pathname === '/contact' ? 'active' : ''}`}>Contact</Link>
-              <Link to="/admin" className="admin-icon" title="Admin Panel">
+              <Link to="/admin" className="admin-icon nav-link-admin" title="Admin Panel" style={{ marginRight: '0.5rem' }}>
                 <ShieldAlert size={20} />
               </Link>
+              {resumeUrl && (
+                <a 
+                  href={resumeUrl} 
+                  download="Resume.pdf" 
+                  className="nav-link nav-link-resume" 
+                  style={{
+                    background: 'var(--accent-red)',
+                    color: '#fff',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '4px',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    fontWeight: 'bold',
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    whiteSpace: 'nowrap',
+                    fontSize: '1rem',
+                    letterSpacing: '1px',
+                    transition: 'background 0.3s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-blue)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'var(--accent-red)'}
+                >
+                  Download Resume
+                </a>
+              )}
             </>
           ) : (
             <Link to="/" className="nav-link">Back to Portfolio</Link>
