@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Fingerprint, Terminal, Biohazard } from 'lucide-react';
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
+import { useWindowSize } from 'react-use';
 
 export default function AdminLogin() {
   const [username, setUsername] = useState('');
@@ -12,6 +13,8 @@ export default function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [glitchText, setGlitchText] = useState('SECURE TERMINAL');
   const navigate = useNavigate();
+  const { width: windowWidth } = useWindowSize();
+  const isMobile = windowWidth < 768;
 
   useEffect(() => {
     const texts = ['RESTRICTED ACCESS', 'HOST REQUIRED', 'SYMBIOTE DETECTED', 'PROJECT V.E.N.O.M.'];
@@ -124,7 +127,7 @@ export default function AdminLogin() {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      width: '100vw', 
+      width: '100%', 
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center', 
@@ -171,11 +174,11 @@ export default function AdminLogin() {
         style={{ 
           background: 'rgba(5, 0, 0, 0.75)', 
           backdropFilter: 'blur(8px)',
-          padding: '3rem', 
+          padding: isMobile ? '1.5rem' : '3rem', 
           border: '1px solid #ff0000', 
           boxShadow: '0 0 30px rgba(255, 0, 0, 0.3), inset 0 0 20px rgba(255, 0, 0, 0.1)',
           maxWidth: '450px', 
-          width: '90%',
+          width: isMobile ? '95%' : '90%',
           position: 'relative',
           zIndex: 20,
           clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%)'
@@ -186,17 +189,17 @@ export default function AdminLogin() {
         {/* Top right decorative line */}
         <div style={{ position: 'absolute', top: '15px', right: '15px', width: '60px', height: '3px', background: '#ff0000', boxShadow: '0 0 10px #ff0000' }} />
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2.5rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: isMobile ? '1.5rem' : '2.5rem' }}>
           <motion.div
             animate={{ opacity: [1, 0.4, 1], scale: [1, 1.05, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Biohazard size={55} color="#ff0000" />
+            <Biohazard size={isMobile ? 45 : 55} color="#ff0000" />
           </motion.div>
-          <h2 style={{ color: '#ff0000', fontSize: '1.4rem', marginTop: '1.2rem', letterSpacing: '5px', textAlign: 'center', textShadow: '0 0 10px rgba(255,0,0,0.5)' }}>
+          <h2 style={{ color: '#ff0000', fontSize: isMobile ? '1.2rem' : '1.4rem', marginTop: '1.2rem', letterSpacing: isMobile ? '3px' : '5px', textAlign: 'center', textShadow: '0 0 10px rgba(255,0,0,0.5)', wordWrap: 'break-word' }}>
             LIFE FOUNDATION
           </h2>
-          <div style={{ color: '#fff', fontSize: '0.85rem', opacity: 0.8, letterSpacing: '3px', marginTop: '0.5rem' }}>
+          <div style={{ color: '#fff', fontSize: isMobile ? '0.75rem' : '0.85rem', opacity: 0.8, letterSpacing: isMobile ? '2px' : '3px', marginTop: '0.5rem', textAlign: 'center' }}>
             {glitchText}
           </div>
         </div>
@@ -227,7 +230,7 @@ export default function AdminLogin() {
               onChange={(e) => setUsername(e.target.value)}
               style={{ 
                 width: '100%', 
-                padding: '1rem', 
+                padding: isMobile ? '0.8rem' : '1rem', 
                 background: 'rgba(255, 0, 0, 0.05)', 
                 border: '1px solid rgba(255, 0, 0, 0.4)', 
                 color: '#ffdddd',
@@ -260,7 +263,7 @@ export default function AdminLogin() {
               onChange={(e) => setPassword(e.target.value)}
               style={{ 
                 width: '100%', 
-                padding: '1rem', 
+                padding: isMobile ? '0.8rem' : '1rem', 
                 background: 'rgba(255, 0, 0, 0.05)', 
                 border: '1px solid rgba(255, 0, 0, 0.4)', 
                 color: '#ffdddd',
@@ -290,7 +293,7 @@ export default function AdminLogin() {
             style={{ 
               marginTop: '1rem',
               width: '100%',
-              padding: '1.2rem',
+              padding: isMobile ? '1rem' : '1.2rem',
               background: 'rgba(255,0,0,0.05)',
               border: '1px solid #ff0000',
               color: '#ff0000',
@@ -327,7 +330,7 @@ export default function AdminLogin() {
           </motion.button>
         </form>
 
-        <div style={{ marginTop: '2.5rem', textAlign: 'center', fontSize: '0.75rem', color: 'rgba(255,0,0,0.6)', letterSpacing: '2px' }}>
+        <div style={{ marginTop: isMobile ? '1.5rem' : '2.5rem', textAlign: 'center', fontSize: isMobile ? '0.65rem' : '0.75rem', color: 'rgba(255,0,0,0.6)', letterSpacing: isMobile ? '1px' : '2px' }}>
           UNAUTHORIZED ACCESS WILL RESULT IN ASSIMILATION
         </div>
       </motion.div>

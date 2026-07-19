@@ -17,6 +17,7 @@ import {
 } from '../backend/db';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { FaArrowUp, FaArrowDown, FaEdit, FaTrash } from 'react-icons/fa';
+import { useWindowSize } from 'react-use';
 
 const calculateDuration = (fromDate, toDate, isCurrent) => {
   if (!fromDate) return '';
@@ -98,6 +99,8 @@ const compressImage = (file, maxSizeMB = 1) => {
 
 const DynamicModal = ({ config, onClose }) => {
   const [formData, setFormData] = useState(config.initialData || {});
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -115,7 +118,7 @@ const DynamicModal = ({ config, onClose }) => {
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <div style={{ background: '#111', padding: '2rem', borderRadius: '12px', border: '2px solid var(--accent-red)', width: '90%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 0 30px rgba(226, 54, 54, 0.2)' }}>
+      <div style={{ background: '#111', padding: isMobile ? '1.2rem' : '2rem', borderRadius: '12px', border: '2px solid var(--accent-red)', width: '90%', maxWidth: '600px', maxHeight: isMobile ? '80vh' : '90vh', overflowY: 'auto', boxShadow: '0 0 30px rgba(226, 54, 54, 0.2)' }}>
         <h2 style={{ marginBottom: '1.5rem', color: '#fff', fontFamily: 'var(--font-heading)' }}>{config.title}</h2>
         <form onSubmit={handleSubmit}>
           {config.fields.filter(f => !f.condition || f.condition(formData)).map(f => (
@@ -250,6 +253,8 @@ const DynamicModal = ({ config, onClose }) => {
 const DraggableSkillPreview = ({ skills, setSkills, saveSkills, imageSrc }) => {
   const [draggingId, setDraggingId] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
   
   const handlePointerDown = (e, id) => {
     e.preventDefault();
@@ -301,7 +306,7 @@ const DraggableSkillPreview = ({ skills, setSkills, saveSkills, imageSrc }) => {
         left: isFullscreen ? 0 : 'auto',
         width: isFullscreen ? '100vw' : '100%', 
         maxWidth: isFullscreen ? 'none' : '600px', 
-        height: isFullscreen ? '100vh' : '500px', 
+        height: isFullscreen ? '100vh' : (isMobile ? '350px' : '500px'), 
         margin: isFullscreen ? 0 : '0 auto',
         border: isFullscreen ? 'none' : '2px dashed #444',
         borderRadius: isFullscreen ? '0' : '8px',
@@ -339,7 +344,7 @@ const DraggableSkillPreview = ({ skills, setSkills, saveSkills, imageSrc }) => {
         alt="Education Preview" 
         style={{ 
           width: '100%', 
-          maxWidth: isFullscreen ? '600px' : '400px', 
+          maxWidth: isFullscreen ? '600px' : (isMobile ? '250px' : '400px'), 
           objectFit: 'contain', 
           zIndex: 10,
           pointerEvents: 'none',
@@ -395,8 +400,15 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [bgLoading, setBgLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('intro');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
+  const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isMobile) setIsSidebarOpen(false);
+    else setIsSidebarOpen(true);
+  }, [isMobile]);
 
   // State for all data
   const [experience, setExperience] = useState([]);
@@ -603,6 +615,14 @@ export default function AdminDashboard() {
         <DynamicModal config={modalConfig} onClose={() => setModalConfig(null)} />
       )}
 
+      {/* Mobile Sidebar Overlay Background */}
+      {isMobile && isSidebarOpen && (
+        <div 
+          onClick={() => setIsSidebarOpen(false)}
+          style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 998, backdropFilter: 'blur(5px)' }}
+        />
+      )}
+
       {/* Sidebar */}
       <div style={{ 
         width: isSidebarOpen ? '250px' : '0px', 
@@ -610,7 +630,14 @@ export default function AdminDashboard() {
         transition: 'width 0.3s',
         backgroundColor: '#111',
         borderRight: '2px solid var(--accent-red)',
-        display: 'flex', flexDirection: 'column'
+        display: 'flex', flexDirection: 'column',
+        ...(isMobile && {
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          bottom: 0,
+          zIndex: 999
+        })
       }}>
         <div style={{ padding: '2rem 1rem', borderBottom: '1px solid #333' }}>
           <h2 style={{ fontFamily: 'var(--font-comic)', color: 'var(--accent-red)', fontSize: '1.5rem', textAlign: 'center' }}>Control Center</h2>
@@ -642,7 +669,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Main Content */}
-      <div style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
+      <div style={{ flex: 1, padding: isMobile ? '1rem' : '2rem', overflowY: 'auto' }}>
         
         {/* Topbar */}
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem' }}>
@@ -711,7 +738,7 @@ export default function AdminDashboard() {
               
               <div style={{ display: 'grid', gap: '1rem' }}>
                 {(intro.buttons || []).map((btn, index) => (
-                  <div key={btn.id} style={{ background: '#222', padding: '1rem', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div key={btn.id} style={{ background: '#222', padding: '1rem', borderRadius: '8px', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <strong>{btn.label}</strong> <span style={{ color: '#888', fontSize: '0.85rem', marginLeft: '0.5rem' }}>({btn.link})</span>
                       <div style={{ color: btn.isExternal ? '#eab308' : '#4ade80', fontSize: '0.8rem', marginTop: '0.25rem' }}>{btn.isExternal ? 'External Link' : 'Internal Link'}</div>
@@ -775,7 +802,7 @@ export default function AdminDashboard() {
             <div style={{ display: 'grid', gap: '1rem' }}>
               {experience.map((exp, index) => (
                 <div key={exp.id} style={{ background: '#111', padding: '1rem', borderRadius: '8px', borderLeft: '4px solid var(--accent-blue)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
                       {renderActionButtons(setExperience, saveExperience, experience, exp, index)}
                       <div>
@@ -840,7 +867,7 @@ export default function AdminDashboard() {
             <div style={{ display: 'grid', gap: '1rem' }}>
               {education.map((edu, index) => (
                 <div key={edu.id} style={{ background: '#111', padding: '1rem', borderRadius: '8px', borderLeft: '4px solid #4ade80' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       {renderActionButtons(setEducation, saveEducation, education, edu, index)}
                       <div>
@@ -966,7 +993,7 @@ export default function AdminDashboard() {
               <div style={{ display: 'grid', gap: '1rem' }}>
                 {companyProjects.map((p, index) => (
                   <div key={p.id} style={{ background: '#111', padding: '1rem', border: '1px solid #333' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         {renderActionButtons(setCompanyProjects, saveCompanyProjects, companyProjects, p, index)}
                         <strong>{p.icon} {p.title}</strong> 
@@ -999,7 +1026,7 @@ export default function AdminDashboard() {
               <div style={{ display: 'grid', gap: '1rem' }}>
                 {personalProjects.map((p, index) => (
                   <div key={p.id} style={{ background: '#111', padding: '1rem', border: '1px solid #333' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         {renderActionButtons(setPersonalProjects, savePersonalProjects, personalProjects, p, index)}
                         <strong>{p.icon} {p.title}</strong> 
@@ -1032,7 +1059,7 @@ export default function AdminDashboard() {
               <div style={{ display: 'grid', gap: '1rem' }}>
                 {casualProjects.map((p, index) => (
                   <div key={p.id} style={{ background: '#111', padding: '1rem', border: '1px solid #333' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         {renderActionButtons(setCasualProjects, saveCasualProjects, casualProjects, p, index)}
                         <strong>{p.icon} {p.title}</strong> 
@@ -1077,7 +1104,7 @@ export default function AdminDashboard() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
               {certificates.map((cert, index) => (
                 <div key={cert.id} style={{ background: '#111', padding: '1rem', borderRadius: '8px', border: '1px solid #333' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
                       {renderActionButtons(setCertificates, saveCertificates, certificates, cert, index)}
                       <div>
@@ -1112,7 +1139,7 @@ export default function AdminDashboard() {
 
         {/* --- LINKS & CONTACT TAB --- */}
         {activeTab === 'links' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
             <div>
               <h3 style={{ marginBottom: '1rem', color: 'var(--accent-red)' }}>Quick Links (Links Page)</h3>
               <button className="btn-primary" style={{ marginBottom: '1rem', padding: '0.5rem 1rem', fontSize: '0.9rem' }} onClick={() => {
@@ -1129,7 +1156,7 @@ export default function AdminDashboard() {
               <div style={{ display: 'grid', gap: '1rem' }}>
                 {quickLinks.map((link, index) => (
                   <div key={link.id} style={{ background: '#111', padding: '1rem', border: `1px solid ${link.highlight ? 'var(--accent-red)' : '#333'}` }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         {renderActionButtons(setQuickLinks, saveQuickLinks, quickLinks, link, index)}
                         <strong>{link.title}</strong>
@@ -1171,7 +1198,7 @@ export default function AdminDashboard() {
               <div style={{ display: 'grid', gap: '1rem' }}>
                 {contact.map((c, index) => (
                   <div key={c.id} style={{ background: '#111', padding: '1rem', border: '1px solid #333' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         {renderActionButtons(setContact, saveContact, contact, c, index)}
                         <strong>{c.name}</strong>

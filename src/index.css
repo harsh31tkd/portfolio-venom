@@ -27,7 +27,7 @@
 html, body {
   width: 100%;
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-x: clip;
   position: relative;
 }
 
@@ -43,7 +43,7 @@ body {
 #root {
   width: 100%;
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-x: clip;
   position: relative;
 }
 
@@ -324,8 +324,6 @@ a {
   position: relative;
   font-family: var(--font-terminal);
   overflow: hidden;
-  box-sizing: border-box;
-  width: 100%;
   box-shadow: 0 0 15px rgba(226, 54, 54, 0.2);
   clip-path: polygon(
     0 15px, 
@@ -363,8 +361,6 @@ a {
   color: #4ade80; /* Hacker Green */
   text-shadow: 0 0 5px rgba(74,222,128,0.5);
   font-family: var(--font-terminal);
-  word-wrap: break-word;
-  overflow-wrap: break-word;
 }
 
 .terminal-title {
@@ -372,9 +368,6 @@ a {
   text-shadow: 2px 0px 0px var(--accent-red), -2px 0px 0px var(--accent-blue);
   font-family: var(--font-terminal);
   letter-spacing: 2px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-all;
 }
 
 .hacked-packet {
@@ -417,8 +410,6 @@ a {
   flex-wrap: wrap;
   gap: 4rem;
   align-items: flex-start;
-  width: 100%;
-  box-sizing: border-box;
 }
 .edu-left-side {
   flex: 1 1 450px;
@@ -428,8 +419,6 @@ a {
   justify-content: center;
   align-items: center;
   margin-top: 2rem;
-  box-sizing: border-box;
-  max-width: 100%;
 }
 .edu-venom-img {
   width: 100%;
@@ -440,9 +429,6 @@ a {
   display: flex;
   flex-direction: column;
   gap: 3rem;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
 }
 .skills-wrapper {
   position: absolute;
@@ -463,16 +449,22 @@ a {
   }
   .edu-layout {
     gap: 2rem;
+    width: 100%;
+    box-sizing: border-box;
   }
   .edu-left-side {
     flex: 1 1 100%;
     min-height: 500px;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   .edu-venom-img {
     max-width: 400px;
   }
   .edu-right-side {
     flex: 1 1 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 
@@ -515,9 +507,17 @@ a {
   }
   .broken-screen {
     padding: 1.2rem;
+    box-sizing: border-box;
+    width: 100%;
   }
   .terminal-title {
     font-size: 1.3rem !important;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .terminal-text {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
   .terminal-text {
     font-size: 0.9rem !important;

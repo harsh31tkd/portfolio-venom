@@ -66,6 +66,81 @@ const parseMarkdownLink = (text) => {
 };
 
 const ScrollLinkedItem = ({ exp, index, total, scrollSpring, isMobile }) => {
+  if (isMobile) {
+    const color = index % 2 === 0 ? '#E23636' : '#a855f7';
+    return (
+      <motion.div 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        style={{
+          width: '100%',
+          background: 'linear-gradient(135deg, rgba(20,10,30,0.95), rgba(0,0,0,0.98))',
+          padding: '1.5rem',
+          borderRadius: '16px',
+          border: `2px solid ${color}`,
+          boxShadow: `0 0 20px ${color}40`,
+          position: 'relative',
+          marginBottom: '3rem'
+        }}
+      >
+        <div style={{
+          position: 'absolute',
+          top: '20px',
+          left: 'calc(-1.5rem - 2px)',
+          transform: 'translate(-50%, -50%)',
+          background: '#000',
+          padding: '8px',
+          borderRadius: '50%',
+          border: `3px solid ${color}`,
+          zIndex: 20
+        }}>
+           {index % 2 === 0 ? <GiSkullCrossedBones size={20} color={color} /> : <GiSpiderMask size={24} color={color} />}
+        </div>
+        
+        <h3 style={{ fontFamily: 'var(--font-venom)', fontSize: '1.8rem', color: color, marginBottom: '0.5rem', letterSpacing: '1px', textShadow: '2px 2px 0 #000', wordWrap: 'break-word', overflowWrap: 'break-word' }}>{exp.role}</h3>
+        
+        {exp.link ? (
+          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '0.5rem' }}>
+            <a href={exp.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+              <h4 style={{ fontFamily: 'var(--font-symbiote)', fontSize: '1.1rem', color: '#fff', margin: 0, textShadow: '2px 2px 0 #000', borderBottom: `2px dashed ${color}` }}>
+                {exp.company}
+              </h4>
+            </a>
+            {exp.appLink && (
+              <a href={exp.appLink} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '1rem', letterSpacing: '1px', textDecoration: 'none', display: 'inline-block' }}>
+                Play Store 📱
+              </a>
+            )}
+          </div>
+        ) : (
+          <h4 style={{ fontFamily: 'var(--font-symbiote)', fontSize: '1.1rem', color: '#fff', marginBottom: '0.5rem', textShadow: '2px 2px 0 #000' }}>{exp.company}</h4>
+        )}
+
+        {exp.fromDate && (
+          <p style={{ color: '#eab308', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>
+            {formatDate(exp.fromDate)} - {exp.isCurrent ? 'Present' : formatDate(exp.toDate)} 
+            <span style={{ color: color, marginLeft: '0.5rem' }}>({calculateDuration(exp.fromDate, exp.toDate, exp.isCurrent)})</span>
+          </p>
+        )}
+        
+        <div className="exp-scroll" style={{ 
+          background: 'rgba(0,0,0,0.3)', 
+          padding: '1rem', 
+          borderRadius: '8px', 
+          maxHeight: '300px',
+          overflowY: 'auto'
+        }}>
+          <ul style={{ color: '#e4e4e7', paddingLeft: '1rem', lineHeight: '1.6', fontSize: '0.95rem' }}>
+            {exp.points && exp.points.map((point, i) => (
+              <li key={i} style={{ marginBottom: '0.5rem' }}>{parseMarkdownLink(point)}</li>
+            ))}
+          </ul>
+        </div>
+      </motion.div>
+    );
+  }
+
   const topPercentage = ((index + 0.5) / total) * 100;
   
   // Use topPercentage for animation threshold instead of just index
@@ -73,7 +148,7 @@ const ScrollLinkedItem = ({ exp, index, total, scrollSpring, isMobile }) => {
   const opacity = useTransform(scrollSpring, [Math.max(0, threshold - 0.15), threshold], [0, 1]);
   const scale = useTransform(scrollSpring, [Math.max(0, threshold - 0.15), threshold], [0.8, 1]);
   
-  const isLeft = isMobile ? false : (index % 2 === 0);
+  const isLeft = (index % 2 === 0);
   const xLeft = useTransform(scrollSpring, [Math.max(0, threshold - 0.15), threshold], [-50, 0]);
   const xRight = useTransform(scrollSpring, [Math.max(0, threshold - 0.15), threshold], [50, 0]);
 
@@ -89,7 +164,7 @@ const ScrollLinkedItem = ({ exp, index, total, scrollSpring, isMobile }) => {
     }}>
       <motion.div 
         style={{ 
-          width: isMobile ? '75vw' : '40vw', // Exact width so edge is at 40vw/60vw (desktop) or 25vw (mobile)
+          width: '40%', // Exact width so edge is at 40%/60% (desktop)
           background: isLeft ? 'rgba(15,15,20,0.95)' : 'linear-gradient(135deg, rgba(20,10,30,0.95), rgba(0,0,0,0.98))', 
           padding: '2.5rem', 
           borderRadius: '16px', 
@@ -137,7 +212,7 @@ const ScrollLinkedItem = ({ exp, index, total, scrollSpring, isMobile }) => {
           </motion.div>
         )}
       
-      <h3 style={{ fontFamily: 'var(--font-venom)', fontSize: '2.5rem', color: isLeft ? '#E23636' : '#a855f7', marginBottom: '0.5rem', letterSpacing: '2px', textShadow: '2px 2px 0 #000' }}>{exp.role}</h3>
+      <h3 style={{ fontFamily: 'var(--font-venom)', fontSize: '2.5rem', color: isLeft ? '#E23636' : '#a855f7', marginBottom: '0.5rem', letterSpacing: '2px', textShadow: '2px 2px 0 #000', wordWrap: 'break-word', overflowWrap: 'break-word' }}>{exp.role}</h3>
       
       {exp.link ? (
         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '2rem', marginBottom: '0.5rem' }}>
@@ -244,45 +319,75 @@ export default function Experience() {
 
       <div className="container" style={{ position: 'relative', paddingTop: '4rem', paddingBottom: '8rem', zIndex: 1 }}>
         <h2 style={{ 
-          fontSize: '4.5rem', 
+          fontSize: isMobile ? '2.5rem' : '4.5rem', 
           fontFamily: 'var(--font-venom)', 
           color: '#a855f7', 
           textAlign: 'center', 
           marginBottom: '2rem', 
-          textShadow: '4px 4px 0 #000, 0 0 20px rgba(168,85,247,0.5)' 
+          textShadow: '4px 4px 0 #000, 0 0 20px rgba(168,85,247,0.5)',
+          wordWrap: 'break-word',
+          letterSpacing: isMobile ? '2px' : 'normal'
         }}>
           Venom Treasure Map 🕸️
         </h2>
 
-        {/* Winding Map Container - Fixed Height based on number of items */}
-        <div style={{ position: 'relative', width: '100%', height: `${Math.max(experiences.length * 600, 1000)}px`, marginTop: '4rem' }}>
+        {/* Winding Map Container / Vertical Timeline Container */}
+        <div style={{ 
+          position: 'relative', 
+          width: '100%', 
+          height: isMobile ? 'auto' : `${Math.max(experiences.length * 600, 1000)}px`, 
+          marginTop: '4rem',
+          paddingLeft: isMobile ? '1.5rem' : '0',
+          borderLeft: isMobile ? '4px dashed rgba(168,85,247,0.5)' : 'none',
+          marginLeft: isMobile ? '1rem' : '0'
+        }}>
           
-          {/* Dynamic Wide Snaking Map Trail */}
-          <svg 
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }} 
-            viewBox="0 0 100 100" 
-            preserveAspectRatio="none"
-          >
-            {/* The Background Trail (Faded) */}
-            <path 
-              d={generatePath(experiences.length, isMobile)}
-              stroke="rgba(226, 54, 54, 0.2)" 
-              strokeWidth="4" 
-              strokeDasharray="4 4" 
-              fill="none" 
-              vectorEffect="nonScalingStroke" 
+          {/* Dynamic Wide Snaking Map Trail (Desktop Only) */}
+          {!isMobile && (
+            <svg 
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }} 
+              viewBox="0 0 100 100" 
+              preserveAspectRatio="none"
+            >
+              {/* The Background Trail (Faded) */}
+              <path 
+                d={generatePath(experiences.length, false)}
+                stroke="rgba(226, 54, 54, 0.2)" 
+                strokeWidth="4" 
+                strokeDasharray="4 4" 
+                fill="none" 
+                vectorEffect="nonScalingStroke" 
+              />
+              {/* The Animated Glowing Trail */}
+              <motion.path 
+                d={generatePath(experiences.length, false)}
+                stroke="#a855f7" 
+                strokeWidth="6" 
+                strokeDasharray="4 4" 
+                fill="none" 
+                vectorEffect="nonScalingStroke" 
+                style={{ pathLength: scrollSpring, filter: 'drop-shadow(0 0 10px #a855f7)' }}
+              />
+            </svg>
+          )}
+
+          {/* Animated Glowing Vertical Line (Mobile Only) */}
+          {isMobile && (
+            <motion.div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: '-4px', // Cover the dashed border
+                width: '4px',
+                height: '100%',
+                background: 'linear-gradient(to bottom, #a855f7, #E23636)',
+                boxShadow: '0 0 15px #a855f7',
+                transformOrigin: 'top',
+                scaleY: scrollSpring,
+                zIndex: 0
+              }}
             />
-            {/* The Animated Glowing Trail */}
-            <motion.path 
-              d={generatePath(experiences.length, isMobile)}
-              stroke="#a855f7" 
-              strokeWidth="6" 
-              strokeDasharray="4 4" 
-              fill="none" 
-              vectorEffect="nonScalingStroke" 
-              style={{ pathLength: scrollSpring, filter: 'drop-shadow(0 0 10px #a855f7)' }}
-            />
-          </svg>
+          )}
 
           {experiences.map((exp, index) => (
             <ScrollLinkedItem 
