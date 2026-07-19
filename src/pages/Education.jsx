@@ -142,14 +142,14 @@ export default function Education() {
 
     const positions = [
       { top: '5%', left: '10%' }, { top: '12%', right: '5%' },
-      { top: '25%', left: '-5%' }, { top: '35%', right: '-10%' },
-      { top: '50%', left: '-15%' }, { top: '60%', right: '-15%' },
+      { top: '25%', left: '5%' }, { top: '35%', right: '0%' },
+      { top: '50%', left: '2%' }, { top: '60%', right: '2%' },
       { top: '75%', left: '0%' }, { top: '85%', right: '5%' },
-      { top: '-10%', left: '45%' }, /* Python moved to top center */
+      { top: '2%', left: '45%' }, /* Python moved to top center */
       { top: '95%', left: '40%' },
       { top: '0%', left: '70%' }, { top: '90%', left: '15%' },
       { top: '40%', left: '15%' }, { top: '70%', right: '20%' },
-      { top: '45%', right: '-5%' }, { top: '80%', left: '30%' }, // Git moved near Express
+      { top: '45%', right: '5%' }, { top: '80%', left: '30%' }, // Git moved near Express
     ];
     let pos = positions[idx % positions.length];
     
@@ -165,49 +165,44 @@ export default function Education() {
       
 
       <div className="container" style={{ position: 'relative', paddingTop: '4rem', paddingBottom: '8rem', zIndex: 1 }}>
-        <h2 style={{ 
-          fontSize: '4.5rem', 
-          fontFamily: 'var(--font-venom)', 
-          color: '#4ade80', 
-          textAlign: 'center', 
-          marginBottom: '5rem', 
-          textShadow: '4px 4px 0 #000, 0 0 20px rgba(74,222,128,0.5)',
-          letterSpacing: '4px'
-        }}>
+        <h2 className="edu-page-title">
           SYSTEM_BREACH // EDUCATION
         </h2>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4rem', alignItems: 'flex-start' }}>
+        <div className="edu-layout">
           
           {/* Left Side: Venom + Floating Data Packets */}
-          <div style={{ flex: '1 1 450px', position: 'relative', minHeight: '700px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '2rem' }}>
+          <div className="edu-left-side">
             
             <motion.img 
               src={imageSrc} 
               alt="Venom Hack"
-              style={{ width: '100%', maxWidth: '600px', filter: 'drop-shadow(0 0 40px rgba(74,222,128,0.4)) hue-rotate(-20deg) brightness(1.2)', zIndex: 10 }}
+              className="edu-venom-img"
+              style={{ filter: 'drop-shadow(0 0 40px rgba(74,222,128,0.4)) hue-rotate(-20deg) brightness(1.2)', zIndex: 10 }}
               animate={{ y: [-15, 15, -15] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
             />
             
             {/* Hacked Packet Skills Orbiting */}
-            {skills.map((skill, idx) => (
-              <motion.div 
-                key={skill.id || idx}
-                className="hacked-packet"
-                style={getPacketStyle(skill, idx)}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.1 }}
-                whileHover={{ scale: 1.2, zIndex: 99, background: '#4ade80', color: '#000', boxShadow: '0 0 30px #4ade80' }}
-              >
-                {`<${skill.name || skill}/>`}
-              </motion.div>
-            ))}
+            <div className="skills-wrapper">
+              {skills.map((skill, idx) => (
+                <motion.div 
+                  key={skill.id || idx}
+                  className="hacked-packet"
+                  style={getPacketStyle(skill, idx)}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.1 }}
+                  whileHover={{ scale: 1.2, zIndex: 99, background: '#4ade80', color: '#000', boxShadow: '0 0 30px #4ade80' }}
+                >
+                  {`<${skill.name || skill}/>`}
+                </motion.div>
+              ))}
+            </div>
           </div>
 
           {/* Right Side: Broken Screens (Education) */}
-          <div style={{ flex: '1 1 500px', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+          <div className="edu-right-side">
             
             {educationData.map((edu, idx) => (
               <ShatteredTerminal 

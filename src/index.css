@@ -324,6 +324,8 @@ a {
   position: relative;
   font-family: var(--font-terminal);
   overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
   box-shadow: 0 0 15px rgba(226, 54, 54, 0.2);
   clip-path: polygon(
     0 15px, 
@@ -361,6 +363,8 @@ a {
   color: #4ade80; /* Hacker Green */
   text-shadow: 0 0 5px rgba(74,222,128,0.5);
   font-family: var(--font-terminal);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .terminal-title {
@@ -368,6 +372,9 @@ a {
   text-shadow: 2px 0px 0px var(--accent-red), -2px 0px 0px var(--accent-blue);
   font-family: var(--font-terminal);
   letter-spacing: 2px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 .hacked-packet {
@@ -391,6 +398,130 @@ a {
   94% { border-color: var(--accent-red); color: var(--accent-red); transform: skew(15deg); box-shadow: 0 0 20px var(--accent-red); }
   96% { border-color: var(--accent-blue); color: #fff; transform: skew(-15deg); box-shadow: 0 0 20px #fff; }
   98% { border-color: var(--accent-blue); color: #4ade80; transform: skew(0deg); }
+}
+
+/* ------------------------------------
+   Education Page Responsive Layout
+--------------------------------------- */
+.edu-page-title {
+  font-size: 4.5rem;
+  font-family: var(--font-venom);
+  color: #4ade80;
+  text-align: center;
+  margin-bottom: 5rem;
+  text-shadow: 4px 4px 0 #000, 0 0 20px rgba(74,222,128,0.5);
+  letter-spacing: 4px;
+}
+.edu-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4rem;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+}
+.edu-left-side {
+  flex: 1 1 450px;
+  position: relative;
+  min-height: 700px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.edu-venom-img {
+  width: 100%;
+  max-width: 600px;
+}
+.edu-right-side {
+  flex: 1 1 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.skills-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.skills-wrapper .hacked-packet {
+  pointer-events: auto;
+}
+
+@media (max-width: 992px) {
+  .edu-page-title {
+    font-size: 3.5rem;
+    margin-bottom: 3rem;
+  }
+  .edu-layout {
+    gap: 2rem;
+  }
+  .edu-left-side {
+    flex: 1 1 100%;
+    min-height: 500px;
+  }
+  .edu-venom-img {
+    max-width: 400px;
+  }
+  .edu-right-side {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .edu-page-title {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    letter-spacing: 2px;
+    word-break: break-word;
+  }
+  .edu-left-side {
+    min-height: auto;
+    margin-top: 0;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .skills-wrapper {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    pointer-events: auto;
+    height: auto;
+  }
+  .skills-wrapper .hacked-packet {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    animation: none;
+  }
+  .edu-venom-img {
+    max-width: 250px;
+  }
+  .broken-screen {
+    padding: 1.2rem;
+  }
+  .terminal-title {
+    font-size: 1.3rem !important;
+  }
+  .terminal-text {
+    font-size: 0.9rem !important;
+  }
 }
 
 /* ------------------------------------
