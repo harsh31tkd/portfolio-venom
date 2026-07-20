@@ -266,6 +266,12 @@ export const DEFAULT_CONTACT = [
   { id: 'c5', name: 'Snapchat', value: 'Add me', link: 'https://snapchat.com', iconType: 'FaSnapchat', color: '#fffc00' }
 ];
 
+export const DEFAULT_ABOUT_ME = {
+  title: 'About Me',
+  content: 'I am a passionate developer who loves building things for the web and mobile. Always learning new technologies and seeking out new challenges.',
+  image: null
+};
+
 // Helper to get/set
 const getLocal = (key, defaultData) => {
   const data = localStorage.getItem(key);
@@ -317,6 +323,13 @@ export const saveQuickLinks = (data) => setLocal('venom_quick_links', data);
 
 export const getContact = () => getLocal('venom_contact', DEFAULT_CONTACT);
 export const saveContact = (data) => setLocal('venom_contact', data);
+
+export const getAboutMe = () => {
+  const data = getLocal('venom_about_me', null);
+  if (!data) return DEFAULT_ABOUT_ME;
+  return { ...DEFAULT_ABOUT_ME, ...data };
+};
+export const saveAboutMe = (data) => setLocal('venom_about_me', data);
 
 export const getEducationSkills = () => getLocal('venom_education_skills', DEFAULT_EDUCATION_SKILLS);
 export const saveEducationSkills = (data) => setLocal('venom_education_skills', data);

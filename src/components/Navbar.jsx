@@ -86,6 +86,7 @@ export default function Navbar() {
               <Link to="/education" className={`nav-link ${location.pathname === '/education' ? 'active' : ''}`}>Education</Link>
               <Link to="/projects" className={`nav-link ${location.pathname === '/projects' ? 'active' : ''}`}>Projects</Link>
               <Link to="/certificates" className={`nav-link ${location.pathname === '/certificates' ? 'active' : ''}`}>Certificates</Link>
+              <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>About Me</Link>
               <Link to="/links" className={`nav-link ${location.pathname === '/links' ? 'active' : ''}`}>Links</Link>
               <Link to="/contact" className={`nav-link ${location.pathname === '/contact' ? 'active' : ''}`}>Contact</Link>
               <Link to="/admin" className="admin-icon nav-link-admin" title="Admin Panel" style={{ marginRight: '0.5rem' }}>

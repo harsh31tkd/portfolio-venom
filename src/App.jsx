@@ -9,6 +9,7 @@ import Contact from './pages/Contact';
 import Links from './pages/Links';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import About from './pages/About';
 import InteractiveBackground from './components/InteractiveBackground';
 import './index.css';
 
@@ -21,6 +22,7 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           <Route path="/links" element={<Links />} />
           <Route path="/experience" element={<Experience />} />
           <Route path="/education" element={<Education />} />

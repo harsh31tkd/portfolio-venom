@@ -9,6 +9,7 @@ import {
   getCertificates, saveCertificates,
   getEducation, saveEducation,
   getIntro, saveIntro,
+  getAboutMe, saveAboutMe,
   getQuickLinks, saveQuickLinks,
   getContact, saveContact,
   getEducationSkills, saveEducationSkills,
@@ -418,6 +419,7 @@ export default function AdminDashboard() {
   const [certificates, setCertificates] = useState([]);
   const [education, setEducation] = useState([]);
   const [intro, setIntro] = useState({ title: '', subtitle: '', bio: '' });
+  const [aboutMe, setAboutMe] = useState({ title: '', content: '', image: null });
   const [quickLinks, setQuickLinks] = useState([]);
   const [contact, setContact] = useState([]);
   const [educationSkills, setEducationSkills] = useState([]);
@@ -440,6 +442,7 @@ export default function AdminDashboard() {
     setCertificates(getCertificates());
     setEducation(getEducation());
     setIntro(getIntro());
+    setAboutMe(getAboutMe());
     setQuickLinks(getQuickLinks());
     setContact(getContact());
     setEducationSkills(getEducationSkills());
@@ -587,10 +590,61 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleAboutMeChange = (e, field) => {
+    const newAboutMe = { ...aboutMe, [field]: e.target.value };
+    setAboutMe(newAboutMe);
+    saveAboutMe(newAboutMe);
+  };
+
+  const handleAboutImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setBgLoading(true);
+    try {
+      const blob = await removeBackground(file);
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        const img = new Image();
+        img.src = base64data;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > height) {
+            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+          } else {
+            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          const resizedBase64 = canvas.toDataURL('image/png', 0.8);
+          const newAboutMe = { ...aboutMe, image: resizedBase64 };
+          setAboutMe(newAboutMe);
+          saveAboutMe(newAboutMe);
+          setBgLoading(false);
+        };
+      };
+    } catch (err) {
+      console.error("Background removal failed:", err);
+      alert("Failed to process image. Try a smaller file.");
+      setBgLoading(false);
+    }
+  };
+
   if (loading) return <div style={{ color: 'white', padding: '2rem' }}>Loading Symbiote OS...</div>;
 
   const sidebarTabs = [
     { id: 'intro', label: 'Introduction' },
+    { id: 'about', label: 'About Me' },
     { id: 'experience', label: 'Experience' },
     { id: 'education', label: 'Education' },
     { id: 'skills', label: 'Skills & Graphics' },
@@ -777,6 +831,36 @@ export default function AdminDashboard() {
               </div>
             </div>
 
+          </div>
+        )}
+
+        {/* --- ABOUT ME TAB --- */}
+        {activeTab === 'about' && (
+          <div style={{ background: '#111', padding: '2rem', borderRadius: '8px', border: '1px solid #333', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div>
+              <h3 style={{ marginBottom: '1rem', color: 'var(--accent-red)' }}>Edit About Me</h3>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Title</label>
+              <input type="text" value={aboutMe.title} onChange={e => handleAboutMeChange(e, 'title')} style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem', background: '#000', color: '#fff', border: '1px solid #444' }} />
+
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Content</label>
+              <textarea value={aboutMe.content} onChange={e => handleAboutMeChange(e, 'content')} style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem', background: '#000', color: '#fff', border: '1px solid #444', minHeight: '150px' }} />
+            </div>
+
+            <div style={{ borderTop: '1px solid #333', paddingTop: '2rem' }}>
+              <h3 style={{ marginBottom: '1rem', color: 'var(--accent-red)' }}>Profile Image (Auto-Remove BG)</h3>
+              <input type="file" accept="image/*" onChange={handleAboutImageUpload} disabled={bgLoading} style={{ display: 'block', marginBottom: '1rem' }} />
+              {bgLoading && <p style={{ color: '#eab308' }}>Processing image and removing background... (This might take a few seconds)</p>}
+              {aboutMe.image && !bgLoading && (
+                <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '1rem' }}>
+                  <img src={aboutMe.image} alt="Preview" style={{ maxWidth: '300px', maxHeight: '300px', objectFit: 'contain', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }} />
+                  <button onClick={() => {
+                    const newAboutMe = { ...aboutMe, image: null };
+                    setAboutMe(newAboutMe);
+                    saveAboutMe(newAboutMe);
+                  }} style={{ color: 'red', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FaTrash /> Remove Image</button>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
