@@ -478,21 +478,24 @@ export default function AdminDashboard() {
       navigate('/admin');
       return;
     }
-    // Load all data
-    setExperience(getExperience());
-    setCompanyProjects(getCompanyProjects());
-    setPersonalProjects(getPersonalProjects());
-    setCasualProjects(getCasualProjects());
-    setCertificates(getCertificates());
-    setEducation(getEducation());
-    setIntro(getIntro());
-    setAboutMe(getAboutMe());
-    setQuickLinks(getQuickLinks());
-    setContact(getContact());
-    setEducationSkills(getEducationSkills());
-    setEducationImage(getEducationImage());
-    setResume(getResume());
-    setLoading(false);
+    // Load all data asynchronously
+    const loadAllData = async () => {
+      setExperience(await getExperience());
+      setCompanyProjects(await getCompanyProjects());
+      setPersonalProjects(await getPersonalProjects());
+      setCasualProjects(await getCasualProjects());
+      setCertificates(await getCertificates());
+      setEducation(await getEducation());
+      setIntro(await getIntro());
+      setAboutMe(await getAboutMe());
+      setQuickLinks(await getQuickLinks());
+      setContact(await getContact());
+      setEducationSkills(await getEducationSkills());
+      setEducationImage(await getEducationImage());
+      setResume(await getResume());
+      setLoading(false);
+    };
+    loadAllData();
   }, [navigate]);
 
   const handleLogout = () => {

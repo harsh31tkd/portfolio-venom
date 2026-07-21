@@ -9,7 +9,7 @@ export default function About() {
   const [about, setAbout] = useState({ title: '', content: '', image: null });
 
   useEffect(() => {
-    setAbout(getAboutMe());
+    getAboutMe().then(setAbout);
   }, []);
 
   return (

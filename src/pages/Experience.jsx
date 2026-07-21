@@ -276,7 +276,7 @@ export default function Experience() {
   });
 
   useEffect(() => {
-    setExperiences(getExperience());
+    getExperience().then(setExperiences);
   }, []);
 
   return (

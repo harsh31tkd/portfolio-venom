@@ -55,7 +55,7 @@ export default function Certificates() {
   const [certs, setCerts] = useState([]);
 
   useEffect(() => {
-    setCerts(getCertificates());
+    getCertificates().then(setCerts);
   }, []);
 
   return (

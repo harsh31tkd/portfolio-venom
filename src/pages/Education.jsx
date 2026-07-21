@@ -121,11 +121,11 @@ export default function Education() {
   const [imageSrc, setImageSrc] = useState('/image.png');
 
   useEffect(() => {
-    setEducationData(getEducation());
-    setSkills(getEducationSkills());
-    
-    const bg = getEducationImage();
-    if (bg) setImageSrc(bg);
+    getEducation().then(setEducationData);
+    getEducationSkills().then(setSkills);
+    getEducationImage().then(bg => {
+      if (bg) setImageSrc(bg);
+    });
   }, []);
 
   // Calculate random floating positions for the hacked packets around Venom

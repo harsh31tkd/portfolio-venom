@@ -19,7 +19,7 @@ export default function Contact() {
   const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
-    setSocials(getContact());
+    getContact().then(setSocials);
   }, []);
 
   const handleSend = (e) => {

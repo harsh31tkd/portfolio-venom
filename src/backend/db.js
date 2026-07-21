@@ -9,6 +9,7 @@ import certPresentation from '../assets/online certificates/presentation_skills.
 import certStrategy from '../assets/online certificates/strategy_planning_and_execution.pdf';
 import certExtra1 from '../assets/online certificates/WhatsApp Image 2026-07-14 at 7.09.48 PM.jpeg';
 import certExtra2 from '../assets/online certificates/WhatsApp Image 2026-07-14 at 7.09.49 PM.jpeg';
+import localforage from 'localforage';
 
 export const DEFAULT_EXPERIENCE = [
   {
@@ -272,42 +273,51 @@ export const DEFAULT_ABOUT_ME = {
   image: null
 };
 
-// Helper to get/set
-const getLocal = (key, defaultData) => {
-  const data = localStorage.getItem(key);
-  return data ? JSON.parse(data) : defaultData;
+// Helper to get/set using localforage (IndexedDB)
+const getLocal = async (key, defaultData) => {
+  // Migrate data from localStorage to localforage if it exists
+  const oldData = localStorage.getItem(key);
+  if (oldData) {
+    try {
+      const parsed = JSON.parse(oldData);
+      await localforage.setItem(key, parsed);
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.error("Migration error for", key, e);
+    }
+  }
+
+  const data = await localforage.getItem(key);
+  return data !== null ? data : defaultData;
 };
-const setLocal = (key, data) => {
+
+const setLocal = async (key, data) => {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    await localforage.setItem(key, data);
   } catch (error) {
     console.error("Storage error:", error);
-    if (error.name === 'QuotaExceededError' || error.message.includes('quota')) {
-      alert("🚨 STORAGE FULL! The browser's local storage limit (approx 5MB) has been reached. Please remove old certificates, images, or large videos before saving new ones. (Your recent changes could NOT be saved.)");
-    } else {
-      alert("Failed to save data. " + error.message);
-    }
+    alert("Failed to save data to IndexedDB. " + error.message);
   }
 };
 
 // Getters & Setters
-export const getExperience = () => getLocal('venom_experience', DEFAULT_EXPERIENCE);
-export const saveExperience = (data) => setLocal('venom_experience', data);
+export const getExperience = async () => await getLocal('venom_experience', DEFAULT_EXPERIENCE);
+export const saveExperience = async (data) => await setLocal('venom_experience', data);
 
-export const getCompanyProjects = () => getLocal('venom_company_projects', DEFAULT_COMPANY_PROJECTS);
-export const saveCompanyProjects = (data) => setLocal('venom_company_projects', data);
+export const getCompanyProjects = async () => await getLocal('venom_company_projects', DEFAULT_COMPANY_PROJECTS);
+export const saveCompanyProjects = async (data) => await setLocal('venom_company_projects', data);
 
-export const getPersonalProjects = () => getLocal('venom_personal_projects', DEFAULT_PERSONAL_PROJECTS);
-export const savePersonalProjects = (data) => setLocal('venom_personal_projects', data);
+export const getPersonalProjects = async () => await getLocal('venom_personal_projects', DEFAULT_PERSONAL_PROJECTS);
+export const savePersonalProjects = async (data) => await setLocal('venom_personal_projects', data);
 
-export const getCasualProjects = () => getLocal('venom_casual_projects', DEFAULT_CASUAL_PROJECTS);
-export const saveCasualProjects = (data) => setLocal('venom_casual_projects', data);
+export const getCasualProjects = async () => await getLocal('venom_casual_projects', DEFAULT_CASUAL_PROJECTS);
+export const saveCasualProjects = async (data) => await setLocal('venom_casual_projects', data);
 
-export const getCertificates = () => getLocal('venom_certificates', DEFAULT_CERTIFICATES);
-export const saveCertificates = (data) => setLocal('venom_certificates', data);
+export const getCertificates = async () => await getLocal('venom_certificates', DEFAULT_CERTIFICATES);
+export const saveCertificates = async (data) => await setLocal('venom_certificates', data);
 
-export const getEducation = () => {
-  const data = getLocal('venom_education', DEFAULT_EDUCATION);
+export const getEducation = async () => {
+  const data = await getLocal('venom_education', DEFAULT_EDUCATION);
   return data.map(edu => {
     if (edu.degreeLevel) return edu;
     // Migrate old data
@@ -320,36 +330,36 @@ export const getEducation = () => {
     };
   });
 };
-export const saveEducation = (data) => setLocal('venom_education', data);
+export const saveEducation = async (data) => await setLocal('venom_education', data);
 
-export const getIntro = () => {
-  const data = getLocal('venom_intro', null);
+export const getIntro = async () => {
+  const data = await getLocal('venom_intro', null);
   if (!data) return DEFAULT_INTRO;
   return { ...DEFAULT_INTRO, ...data, buttons: data.buttons || DEFAULT_INTRO.buttons };
 };
-export const saveIntro = (data) => setLocal('venom_intro', data);
+export const saveIntro = async (data) => await setLocal('venom_intro', data);
 
-export const getQuickLinks = () => getLocal('venom_quick_links', DEFAULT_QUICK_LINKS);
-export const saveQuickLinks = (data) => setLocal('venom_quick_links', data);
+export const getQuickLinks = async () => await getLocal('venom_quick_links', DEFAULT_QUICK_LINKS);
+export const saveQuickLinks = async (data) => await setLocal('venom_quick_links', data);
 
-export const getContact = () => getLocal('venom_contact', DEFAULT_CONTACT);
-export const saveContact = (data) => setLocal('venom_contact', data);
+export const getContact = async () => await getLocal('venom_contact', DEFAULT_CONTACT);
+export const saveContact = async (data) => await setLocal('venom_contact', data);
 
-export const getAboutMe = () => {
-  const data = getLocal('venom_about_me', null);
+export const getAboutMe = async () => {
+  const data = await getLocal('venom_about_me', null);
   if (!data) return DEFAULT_ABOUT_ME;
   return { ...DEFAULT_ABOUT_ME, ...data };
 };
-export const saveAboutMe = (data) => setLocal('venom_about_me', data);
+export const saveAboutMe = async (data) => await setLocal('venom_about_me', data);
 
-export const getEducationSkills = () => getLocal('venom_education_skills', DEFAULT_EDUCATION_SKILLS);
-export const saveEducationSkills = (data) => setLocal('venom_education_skills', data);
+export const getEducationSkills = async () => await getLocal('venom_education_skills', DEFAULT_EDUCATION_SKILLS);
+export const saveEducationSkills = async (data) => await setLocal('venom_education_skills', data);
 
-export const getEducationImage = () => getLocal('venom_education_image', DEFAULT_EDUCATION_IMAGE);
-export const saveEducationImage = (data) => setLocal('venom_education_image', data);
+export const getEducationImage = async () => await getLocal('venom_education_image', DEFAULT_EDUCATION_IMAGE);
+export const saveEducationImage = async (data) => await setLocal('venom_education_image', data);
 
-export const getResume = () => getLocal('venom_resume', certHarsh);
-export const saveResume = (data) => setLocal('venom_resume', data);
+export const getResume = async () => await getLocal('venom_resume', certHarsh);
+export const saveResume = async (data) => await setLocal('venom_resume', data);
 
 export const openPdfInNewTab = (base64Data) => {
   if (!base64Data) return;

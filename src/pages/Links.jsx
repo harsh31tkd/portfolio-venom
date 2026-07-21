@@ -7,7 +7,7 @@ export default function Links() {
   const [quickLinks, setQuickLinks] = useState([]);
 
   useEffect(() => {
-    setQuickLinks(getQuickLinks());
+    getQuickLinks().then(setQuickLinks);
   }, []);
 
   return (

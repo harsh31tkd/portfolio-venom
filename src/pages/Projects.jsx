@@ -174,9 +174,9 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
-    setCompanyProjects(getCompanyProjects());
-    setPersonalProjects(getPersonalProjects());
-    setCasualProjects(getCasualProjects());
+    getCompanyProjects().then(setCompanyProjects);
+    getPersonalProjects().then(setPersonalProjects);
+    getCasualProjects().then(setCasualProjects);
   }, []);
 
   return (

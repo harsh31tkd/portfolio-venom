@@ -15,7 +15,7 @@ export default function Home() {
       });
     };
     window.addEventListener('mousemove', handleMouseMove);
-    setIntro(getIntro());
+    getIntro().then(setIntro);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
