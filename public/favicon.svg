@@ -1,29 +1,172 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
-  <!-- Black background circle -->
-  <circle cx="50" cy="50" r="50" fill="#000000"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <!-- Background gradient - deep dark -->
+    <radialGradient id="bg" cx="50%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#0d0005"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
 
-  <!-- Head shape -->
-  <ellipse cx="50" cy="45" rx="30" ry="35" fill="#111111"/>
+    <!-- Head gradient - glossy symbiote black -->
+    <radialGradient id="headShine" cx="35%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="#2a2a2a"/>
+      <stop offset="40%" stop-color="#111111"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
 
-  <!-- Left eye -->
-  <ellipse cx="35" cy="38" rx="10" ry="8" fill="white"/>
-  <ellipse cx="35" cy="38" rx="6" ry="5" fill="#cccccc"/>
+    <!-- Eye glow effect -->
+    <radialGradient id="eyeShine" cx="40%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#eeeeee"/>
+      <stop offset="100%" stop-color="#cccccc"/>
+    </radialGradient>
 
-  <!-- Right eye -->
-  <ellipse cx="65" cy="38" rx="10" ry="8" fill="white"/>
-  <ellipse cx="65" cy="38" rx="6" ry="5" fill="#cccccc"/>
+    <!-- Tongue gradient -->
+    <linearGradient id="tongueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff1a1a"/>
+      <stop offset="50%" stop-color="#cc0000"/>
+      <stop offset="100%" stop-color="#880000"/>
+    </linearGradient>
 
-  <!-- Wide grin -->
-  <path d="M 22 60 Q 50 80 78 60" stroke="white" stroke-width="3" fill="none"/>
+    <!-- Glow filter for eyes -->
+    <filter id="eyeGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
 
-  <!-- Teeth -->
-  <polygon points="28,62 33,72 38,62" fill="white"/>
-  <polygon points="38,65 43,76 48,65" fill="white"/>
-  <polygon points="48,67 53,78 58,67" fill="white"/>
-  <polygon points="58,65 63,76 68,65" fill="white"/>
-  <polygon points="68,62 73,72 78,62" fill="white"/>
+    <!-- Drop shadow for depth -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.8"/>
+    </filter>
 
-  <!-- Tongue -->
-  <ellipse cx="50" cy="80" rx="8" ry="6" fill="#cc0000"/>
-  <line x1="50" y1="74" x2="50" y2="86" stroke="#990000" stroke-width="2"/>
+    <!-- Tongue glow -->
+    <filter id="tongueGlow">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- =================== BACKGROUND =================== -->
+  <circle cx="50" cy="50" r="50" fill="url(#bg)"/>
+
+  <!-- =================== SYMBIOTE HEAD =================== -->
+  <!-- Main head - organic blob shape -->
+  <path d="
+    M 50 6
+    C 64 6, 78 15, 84 28
+    C 90 41, 88 56, 83 66
+    C 78 76, 70 83, 62 87
+    C 57 90, 53 91, 50 91
+    C 47 91, 43 90, 38 87
+    C 30 83, 22 76, 17 66
+    C 12 56, 10 41, 16 28
+    C 22 15, 36 6, 50 6 Z
+  " fill="url(#headShine)"/>
+
+  <!-- Subtle highlight ridge on top left of head for 3D look -->
+  <path d="M 28 18 C 35 12, 44 9, 50 9 C 44 10, 34 14, 28 18 Z" fill="#333333" opacity="0.5"/>
+
+  <!-- =================== LEFT EYE =================== -->
+  <!-- Venom eyes: large, white, angular, dripping blobs -->
+  <path d="
+    M 16 33
+    C 16 25, 22 21, 29 21
+    C 35 21, 42 26, 42 34
+    C 42 40, 39 45, 34 47
+    C 30 49, 25 48, 21 45
+    C 17 42, 16 38, 16 33 Z
+  " fill="url(#eyeShine)" filter="url(#eyeGlow)"/>
+  <!-- Eye drip top point -->
+  <path d="M 26 21 C 27 17, 29 15, 30 13 C 29 16, 28 19, 26 21 Z" fill="white"/>
+  <!-- Eye drip bottom -->
+  <path d="M 29 47 C 28 51, 27 53, 26 55 C 27 52, 28 50, 29 47 Z" fill="white" opacity="0.7"/>
+
+  <!-- =================== RIGHT EYE =================== -->
+  <path d="
+    M 84 33
+    C 84 25, 78 21, 71 21
+    C 65 21, 58 26, 58 34
+    C 58 40, 61 45, 66 47
+    C 70 49, 75 48, 79 45
+    C 83 42, 84 38, 84 33 Z
+  " fill="url(#eyeShine)" filter="url(#eyeGlow)"/>
+  <!-- Eye drip top point -->
+  <path d="M 74 21 C 73 17, 71 15, 70 13 C 71 16, 72 19, 74 21 Z" fill="white"/>
+  <!-- Eye drip bottom -->
+  <path d="M 71 47 C 72 51, 73 53, 74 55 C 73 52, 72 50, 71 47 Z" fill="white" opacity="0.7"/>
+
+  <!-- =================== MASSIVE GRIN =================== -->
+  <!-- Outer grin black area (open mouth) -->
+  <path d="
+    M 15 63
+    C 17 57, 22 55, 50 55
+    C 78 55, 83 57, 85 63
+    C 83 75, 72 86, 60 89
+    C 55 91, 52 92, 50 92
+    C 48 92, 45 91, 40 89
+    C 28 86, 17 75, 15 63 Z
+  " fill="#050000"/>
+
+  <!-- Gum line upper (white smile line) -->
+  <path d="M 15 63 Q 50 57 85 63" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+  <!-- =================== TEETH =================== -->
+  <!-- Sharp irregular triangular teeth -->
+  <!-- Tooth 1 -->
+  <path d="M 17 63 L 20 76 L 24 63" fill="white"/>
+  <!-- Tooth 2 -->
+  <path d="M 25 62 L 28.5 77 L 33 62" fill="#f5f5f5"/>
+  <!-- Tooth 3 -->
+  <path d="M 34 61 L 37.5 77 L 42 61" fill="white"/>
+  <!-- Tooth 4 (center-left) -->
+  <path d="M 43 61 L 46.5 78 L 50 61" fill="#f5f5f5"/>
+  <!-- Tooth 5 (center-right) -->
+  <path d="M 50 61 L 53.5 78 L 57 61" fill="white"/>
+  <!-- Tooth 6 -->
+  <path d="M 58 61 L 62.5 77 L 66 61" fill="#f5f5f5"/>
+  <!-- Tooth 7 -->
+  <path d="M 67 62 L 71.5 77 L 75 62" fill="white"/>
+  <!-- Tooth 8 -->
+  <path d="M 76 63 L 80 76 L 83 63" fill="#f5f5f5"/>
+
+  <!-- Thin dark lines between teeth for definition -->
+  <line x1="24" y1="63" x2="21" y2="76" stroke="#111" stroke-width="0.5"/>
+  <line x1="33" y1="62" x2="29.5" y2="76" stroke="#111" stroke-width="0.5"/>
+  <line x1="42" y1="61" x2="38.5" y2="76" stroke="#111" stroke-width="0.5"/>
+  <line x1="50" y1="61" x2="47.5" y2="76" stroke="#111" stroke-width="0.5"/>
+  <line x1="57" y1="61" x2="54" y2="76" stroke="#111" stroke-width="0.5"/>
+  <line x1="66" y1="61" x2="63" y2="76" stroke="#111" stroke-width="0.5"/>
+  <line x1="75" y1="62" x2="72" y2="76" stroke="#111" stroke-width="0.5"/>
+
+  <!-- =================== TONGUE =================== -->
+  <!-- Long thick red tongue coming out between teeth -->
+  <path d="
+    M 44 77
+    C 43 82, 42 88, 42 93
+    C 44 97, 47 99, 50 100
+    C 53 99, 56 97, 58 93
+    C 58 88, 57 82, 56 77
+    C 53 79, 50 80, 47 79 Z
+  " fill="url(#tongueGrad)" filter="url(#tongueGlow)"/>
+  <!-- Tongue center groove line -->
+  <line x1="50" y1="77" x2="50" y2="99" stroke="#660000" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+  <!-- Tongue highlight -->
+  <path d="M 46 78 C 46 84, 46 90, 47 94" stroke="#ff6666" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.6"/>
+
+  <!-- Tongue tip fork -->
+  <path d="M 50 97 C 47 100, 44 101, 42 102" stroke="#aa0000" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M 50 97 C 53 100, 56 101, 58 102" stroke="#aa0000" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+  <!-- =================== SYMBIOTE DETAILS =================== -->
+  <!-- Subtle vein/tendril texture on head -->
+  <path d="M 50 7 C 53 11, 57 14, 60 18" stroke="#1e1e1e" stroke-width="1" fill="none" opacity="0.6"/>
+  <path d="M 50 7 C 47 11, 43 14, 40 18" stroke="#1e1e1e" stroke-width="1" fill="none" opacity="0.6"/>
+  <path d="M 60 18 C 65 16, 72 15, 78 19" stroke="#1e1e1e" stroke-width="0.8" fill="none" opacity="0.4"/>
+  <path d="M 40 18 C 35 16, 28 15, 22 19" stroke="#1e1e1e" stroke-width="0.8" fill="none" opacity="0.4"/>
+
 </svg>
