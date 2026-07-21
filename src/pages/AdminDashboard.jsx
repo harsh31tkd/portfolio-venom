@@ -181,11 +181,15 @@ const DynamicModal = ({ config, onClose }) => {
                               if (files.length > availableSlots) {
                                 alert(`You can only upload up to ${f.maxFiles || 10} files. Extra files were ignored.`);
                               }
+                              
+                              const totalSize = filesToProcess.reduce((sum, file) => sum + file.size, 0);
+                              if (totalSize > 10 * 1024 * 1024) {
+                                alert(`The total size of the selected files is ${(totalSize / (1024 * 1024)).toFixed(2)}MB. Please keep the total size under 10MB!`);
+                                setIsProcessing(false);
+                                return;
+                              }
+
                               const processed = await Promise.all(filesToProcess.map(async file => {
-                                if (file.type.startsWith('video/') && file.size > 10 * 1024 * 1024) {
-                                  alert(`Video "${file.name}" is too large! Maximum allowed size is 10MB.`);
-                                  return null;
-                                }
                                 if (file.type.startsWith('image/')) {
                                   return await compressImage(file, 1);
                                 } else {
