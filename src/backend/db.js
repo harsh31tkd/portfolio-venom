@@ -277,7 +277,18 @@ const getLocal = (key, defaultData) => {
   const data = localStorage.getItem(key);
   return data ? JSON.parse(data) : defaultData;
 };
-const setLocal = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+const setLocal = (key, data) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error("Storage error:", error);
+    if (error.name === 'QuotaExceededError' || error.message.includes('quota')) {
+      alert("🚨 STORAGE FULL! The browser's local storage limit (approx 5MB) has been reached. Please remove old certificates, images, or large videos before saving new ones. (Your recent changes could NOT be saved.)");
+    } else {
+      alert("Failed to save data. " + error.message);
+    }
+  }
+};
 
 // Getters & Setters
 export const getExperience = () => getLocal('venom_experience', DEFAULT_EXPERIENCE);

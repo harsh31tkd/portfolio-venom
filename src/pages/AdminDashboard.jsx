@@ -17,8 +17,7 @@ import {
   getResume, saveResume
 } from '../backend/db';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { FaArrowUp, FaArrowDown, FaEdit, FaTrash } from 'react-icons/fa';
-import { useWindowSize } from 'react-use';
+import { FaArrowUp, FaArrowDown, FaEdit, FaTrash, FaCloudUploadAlt } from 'react-icons/fa';
 import { useWindowSize } from 'react-use';
 
 const FilePreviewItem = ({ url, idx, onRemove }) => {
@@ -162,68 +161,73 @@ const DynamicModal = ({ config, onClose }) => {
                 </select>
               ) : f.type === 'file-upload' ? (
                 <div>
-                  <input 
-                    type="file" 
-                    multiple={f.multiple}
-                    accept={f.accept || "image/*,application/pdf"}
-                    onChange={async (e) => {
-                      const files = Array.from(e.target.files);
-                      if (files.length > 0) {
-                        setIsProcessing(true);
-                        try {
-                          if (f.multiple) {
-                            let currentArray = Array.isArray(formData[f.name]) ? formData[f.name] : [];
-                            const availableSlots = (f.maxFiles || 10) - currentArray.length;
-                            const filesToProcess = files.slice(0, availableSlots);
-                            if (files.length > availableSlots) {
-                              alert(`You can only upload up to ${f.maxFiles || 10} files. Extra files were ignored.`);
-                            }
-                            const processed = await Promise.all(filesToProcess.map(async file => {
-                              if (file.type.startsWith('video/') && file.size > 2.5 * 1024 * 1024) {
-                                alert(`Video "${file.name}" is too large! Maximum allowed size is 2.5MB to prevent storage crash.`);
-                                return null;
+                  <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2.5rem 1rem', border: '2px dashed #444', borderRadius: '12px', cursor: 'pointer', background: 'rgba(0,0,0,0.5)', transition: 'all 0.3s ease', textAlign: 'center' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#4ade80'; e.currentTarget.style.background = 'rgba(74, 222, 128, 0.05)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = '#444'; e.currentTarget.style.background = 'rgba(0,0,0,0.5)'; }}>
+                    <FaCloudUploadAlt style={{ fontSize: '3.5rem', color: '#888', marginBottom: '0.75rem' }} />
+                    <span style={{ fontSize: '1.2rem', color: '#fff', fontWeight: 'bold' }}>Click to Browse Files</span>
+                    <span style={{ fontSize: '0.9rem', color: '#888', marginTop: '0.25rem' }}>{f.multiple ? `Max ${f.maxFiles || 10} files (Images/Videos)` : 'Upload a file (Image/PDF)'}</span>
+                    <input 
+                      type="file" 
+                      multiple={f.multiple}
+                      accept={f.accept || "image/*,application/pdf"}
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files);
+                        if (files.length > 0) {
+                          setIsProcessing(true);
+                          try {
+                            if (f.multiple) {
+                              let currentArray = Array.isArray(formData[f.name]) ? formData[f.name] : [];
+                              const availableSlots = (f.maxFiles || 10) - currentArray.length;
+                              const filesToProcess = files.slice(0, availableSlots);
+                              if (files.length > availableSlots) {
+                                alert(`You can only upload up to ${f.maxFiles || 10} files. Extra files were ignored.`);
                               }
-                              if (file.type.startsWith('image/')) {
-                                return await compressImage(file, 1);
-                              } else {
-                                return new Promise(resolve => {
-                                  const reader = new FileReader();
-                                  reader.readAsDataURL(file);
-                                  reader.onload = () => resolve(reader.result);
-                                });
-                              }
-                            }));
-                            const validProcessed = processed.filter(p => p !== null);
-                            setFormData(prev => ({ ...prev, [f.name]: [...(Array.isArray(prev[f.name]) ? prev[f.name] : []), ...validProcessed] }));
-                          } else {
-                            const file = files[0];
-                              if (file.type.startsWith('video/') && file.size > 2.5 * 1024 * 1024) {
-                                alert(`Video "${file.name}" is too large! Maximum allowed size is 2.5MB to prevent storage crash.`);
-                                setIsProcessing(false);
-                                return;
-                              }
-                              if (file.type.startsWith('image/')) {
-                                const compressedBase64 = await compressImage(file, 1);
-                                setFormData(prev => ({ ...prev, [f.name]: compressedBase64 }));
+                              const processed = await Promise.all(filesToProcess.map(async file => {
+                                if (file.type.startsWith('video/') && file.size > 2.5 * 1024 * 1024) {
+                                  alert(`Video "${file.name}" is too large! Maximum allowed size is 2.5MB to prevent storage crash.`);
+                                  return null;
+                                }
+                                if (file.type.startsWith('image/')) {
+                                  return await compressImage(file, 1);
+                                } else {
+                                  return new Promise(resolve => {
+                                    const reader = new FileReader();
+                                    reader.readAsDataURL(file);
+                                    reader.onload = () => resolve(reader.result);
+                                  });
+                                }
+                              }));
+                              const validProcessed = processed.filter(p => p !== null);
+                              setFormData(prev => ({ ...prev, [f.name]: [...(Array.isArray(prev[f.name]) ? prev[f.name] : []), ...validProcessed] }));
                             } else {
-                              const reader = new FileReader();
-                              reader.readAsDataURL(file);
-                              reader.onload = () => {
-                                setFormData(prev => ({ ...prev, [f.name]: reader.result }));
-                              };
+                              const file = files[0];
+                                if (file.type.startsWith('video/') && file.size > 2.5 * 1024 * 1024) {
+                                  alert(`Video "${file.name}" is too large! Maximum allowed size is 2.5MB to prevent storage crash.`);
+                                  setIsProcessing(false);
+                                  return;
+                                }
+                                if (file.type.startsWith('image/')) {
+                                  const compressedBase64 = await compressImage(file, 1);
+                                  setFormData(prev => ({ ...prev, [f.name]: compressedBase64 }));
+                              } else {
+                                const reader = new FileReader();
+                                reader.readAsDataURL(file);
+                                reader.onload = () => {
+                                  setFormData(prev => ({ ...prev, [f.name]: reader.result }));
+                                };
+                              }
                             }
+                          } catch (err) {
+                            console.error("File processing failed", err);
+                            alert("Failed to process file.");
+                          } finally {
+                            setIsProcessing(false);
+                            e.target.value = '';
                           }
-                        } catch (err) {
-                          console.error("File processing failed", err);
-                          alert("Failed to process file.");
-                        } finally {
-                          setIsProcessing(false);
-                          e.target.value = '';
                         }
-                      }
-                    }} 
-                    style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }} 
-                  />
+                      }} 
+                      style={{ display: 'none' }}
+                    />
+                  </label>
                   {isProcessing && (
                     <p style={{ color: '#4ade80', fontSize: '0.85rem', margin: '0.5rem 0' }}>⏳ Processing files, please wait...</p>
                   )}
