@@ -134,7 +134,7 @@ export default function About() {
                 borderTop: '5px solid var(--accent-blue)',
                 borderBottom: '5px solid var(--accent-red)',
                 boxShadow: '0 10px 30px rgba(0,0,0,0.8), inset 0 0 25px rgba(226,54,54,0.15)',
-                textAlign: 'center',
+                textAlign: 'justify',
                 width: '100%',
                 maxWidth: '750px',
                 textShadow: '2px 2px 4px rgba(0,0,0,0.9)'
