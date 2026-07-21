@@ -87,8 +87,8 @@ const compressImage = (file, maxSizeMB = 1) => {
       img.src = event.target.result;
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 1200;
-        const MAX_HEIGHT = 1200;
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
         let width = img.width;
         let height = img.height;
 
@@ -109,13 +109,8 @@ const compressImage = (file, maxSizeMB = 1) => {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
 
-        let quality = 0.8;
-        let dataUrl = canvas.toDataURL('image/jpeg', quality);
-        
-        while ((dataUrl.length * 3) / 4 > maxSizeMB * 1024 * 1024 && quality > 0.1) {
-          quality -= 0.1;
-          dataUrl = canvas.toDataURL('image/jpeg', quality);
-        }
+        // Fast, single-pass compression
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
 
         resolve(dataUrl);
       };
@@ -127,6 +122,7 @@ const compressImage = (file, maxSizeMB = 1) => {
 
 const DynamicModal = ({ config, onClose }) => {
   const [formData, setFormData] = useState(config.initialData || {});
+  const [isProcessing, setIsProcessing] = useState(false);
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
@@ -173,6 +169,7 @@ const DynamicModal = ({ config, onClose }) => {
                     onChange={async (e) => {
                       const files = Array.from(e.target.files);
                       if (files.length > 0) {
+                        setIsProcessing(true);
                         try {
                           if (f.multiple) {
                             let currentArray = Array.isArray(formData[f.name]) ? formData[f.name] : [];
@@ -202,6 +199,7 @@ const DynamicModal = ({ config, onClose }) => {
                             const file = files[0];
                               if (file.type.startsWith('video/') && file.size > 2.5 * 1024 * 1024) {
                                 alert(`Video "${file.name}" is too large! Maximum allowed size is 2.5MB to prevent storage crash.`);
+                                setIsProcessing(false);
                                 return;
                               }
                               if (file.type.startsWith('image/')) {
@@ -218,11 +216,17 @@ const DynamicModal = ({ config, onClose }) => {
                         } catch (err) {
                           console.error("File processing failed", err);
                           alert("Failed to process file.");
+                        } finally {
+                          setIsProcessing(false);
+                          e.target.value = '';
                         }
                       }
                     }} 
                     style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }} 
                   />
+                  {isProcessing && (
+                    <p style={{ color: '#4ade80', fontSize: '0.85rem', margin: '0.5rem 0' }}>⏳ Processing files, please wait...</p>
+                  )}
                   {f.multiple ? (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.75rem' }}>
                       {Array.isArray(formData[f.name]) && formData[f.name].map((url, idx) => (
