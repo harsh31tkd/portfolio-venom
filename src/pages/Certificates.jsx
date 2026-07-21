@@ -26,6 +26,30 @@ import certStrategy from '../assets/online certificates/strategy_planning_and_ex
 import certExtra1 from '../assets/online certificates/WhatsApp Image 2026-07-14 at 7.09.48 PM.jpeg';
 import certExtra2 from '../assets/online certificates/WhatsApp Image 2026-07-14 at 7.09.49 PM.jpeg';
 
+const MemoryCard = ({ url, idx, total }) => {
+  const [rotation, setRotation] = useState(0);
+
+  return (
+    <div style={{ flex: '0 0 auto', padding: '0.75rem', background: '#fff', borderRadius: '4px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', transform: `rotate(${idx % 2 === 0 ? -2 : 3}deg)`, transition: 'transform 0.3s ease', maxWidth: '280px', position: 'relative' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05) rotate(0deg)'} onMouseLeave={e => e.currentTarget.style.transform = `scale(1) rotate(${idx % 2 === 0 ? -2 : 3}deg)`}>
+      <button 
+        onClick={(e) => { e.stopPropagation(); setRotation(prev => prev + 90); }} 
+        style={{ position: 'absolute', top: '15px', right: '15px', background: 'rgba(0,0,0,0.7)', color: 'white', border: '1px solid #fff', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', zIndex: 10, display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem', boxShadow: '0 2px 10px rgba(0,0,0,0.8)' }} 
+        title="Rotate"
+      >
+        ↻
+      </button>
+      <div style={{ overflow: 'hidden', borderRadius: '4px', border: '1px solid #ddd', height: '180px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#111' }}>
+        {url.startsWith('data:video') ? (
+          <video src={url} style={{ width: '100%', height: '100%', objectFit: 'contain', transform: `rotate(${rotation}deg)`, transition: 'transform 0.3s ease' }} controls muted />
+        ) : (
+          <img src={url} alt={`Memory ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain', transform: `rotate(${rotation}deg)`, transition: 'transform 0.3s ease' }} />
+        )}
+      </div>
+      <p style={{ color: '#000', textAlign: 'center', margin: '0.75rem 0 0 0', fontFamily: 'cursive', fontSize: '1.1rem', fontWeight: 'bold' }}>{total === 1 ? 'Tournament Memory' : `Memory ${idx + 1}`}</p>
+    </div>
+  );
+};
+
 export default function Certificates() {
   const [selectedCert, setSelectedCert] = useState(null);
   const [certs, setCerts] = useState([]);
@@ -127,14 +151,7 @@ export default function Certificates() {
                       <h4 style={{ color: '#fff', marginBottom: '1rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem', fontFamily: 'var(--font-heading)' }}>Memory Vault</h4>
                       <div className="custom-scrollbar" style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', padding: '1.5rem 0.5rem', scrollbarWidth: 'thin', scrollbarColor: 'var(--accent-red) #222', background: 'rgba(0,0,0,0.3)', borderRadius: '12px', border: '1px solid #333' }}>
                         {photos.map((url, idx) => (
-                           <div key={idx} style={{ flex: '0 0 auto', padding: '0.75rem', background: '#fff', borderRadius: '4px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', transform: `rotate(${idx % 2 === 0 ? -2 : 3}deg)`, transition: 'transform 0.3s ease', cursor: 'pointer', maxWidth: '280px' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05) rotate(0deg)'} onMouseLeave={e => e.currentTarget.style.transform = `scale(1) rotate(${idx % 2 === 0 ? -2 : 3}deg)`}>
-                             {url.startsWith('data:video') ? (
-                               <video src={url} style={{ width: '100%', height: '180px', objectFit: 'cover', border: '1px solid #ddd' }} controls muted />
-                             ) : (
-                               <img src={url} alt={`Memory ${idx + 1}`} style={{ width: '100%', height: '180px', objectFit: 'cover', border: '1px solid #ddd' }} />
-                             )}
-                             <p style={{ color: '#000', textAlign: 'center', margin: '0.75rem 0 0 0', fontFamily: 'cursive', fontSize: '1.1rem', fontWeight: 'bold' }}>{photos.length === 1 ? 'Tournament Memory' : `Memory ${idx + 1}`}</p>
-                           </div>
+                           <MemoryCard key={idx} url={url} idx={idx} total={photos.length} />
                         ))}
                       </div>
                     </div>
