@@ -86,8 +86,8 @@ const compressImage = (file, maxSizeMB = 1) => {
       img.src = event.target.result;
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 800;
+        const MAX_WIDTH = 600;
+        const MAX_HEIGHT = 600;
         let width = img.width;
         let height = img.height;
 
@@ -108,8 +108,8 @@ const compressImage = (file, maxSizeMB = 1) => {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Fast, single-pass compression
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+        // Fast, highly aggressive single-pass compression for localStorage
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
 
         resolve(dataUrl);
       };
