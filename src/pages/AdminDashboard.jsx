@@ -193,6 +193,8 @@ const DynamicModal = ({ config, onClose }) => {
                         <div key={idx} style={{ position: 'relative' }}>
                            {url.startsWith('data:image') ? (
                              <img src={url} alt="Preview" style={{ height: '60px', width: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #333' }} />
+                           ) : url.startsWith('data:video') ? (
+                             <video src={url} style={{ height: '60px', width: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #333' }} muted />
                            ) : url.startsWith('data:application/pdf') ? (
                              <div style={{ height: '60px', width: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222', borderRadius: '4px', fontSize: '0.7rem' }}>PDF</div>
                            ) : (
@@ -1179,7 +1181,7 @@ export default function AdminDashboard() {
                 { name: 'desc', label: 'Small Description', type: 'textarea' },
                 { name: 'type', label: 'Type (jpg/pdf)' },
                 { name: 'fileUrl', label: 'Certificate File (PDF or JPG)', type: 'file-upload' },
-                { name: 'memoryPhotoUrls', label: 'Memory Photos (Up to 10)', type: 'file-upload', multiple: true, maxFiles: 10, accept: 'image/*', required: false }
+                { name: 'memoryPhotoUrls', label: 'Memory Photos/Videos (Up to 10)', type: 'file-upload', multiple: true, maxFiles: 10, accept: 'image/*,video/*', required: false }
               ], null, (data) => {
                 const updated = [...certificates, { id: Date.now().toString(), ...data }];
                 setCertificates(updated); saveCertificates(updated);
@@ -1206,7 +1208,7 @@ export default function AdminDashboard() {
                           { name: 'desc', label: 'Small Description', type: 'textarea' },
                           { name: 'type', label: 'Type (jpg/pdf)' },
                           { name: 'fileUrl', label: 'Certificate File (PDF or JPG)', type: 'file-upload' },
-                          { name: 'memoryPhotoUrls', label: 'Memory Photos (Up to 10)', type: 'file-upload', multiple: true, maxFiles: 10, accept: 'image/*', required: false }
+                          { name: 'memoryPhotoUrls', label: 'Memory Photos/Videos (Up to 10)', type: 'file-upload', multiple: true, maxFiles: 10, accept: 'image/*,video/*', required: false }
                         ], cert, (data) => {
                           const updated = certificates.map(i => i.id === cert.id ? { ...i, ...data } : i);
                           setCertificates(updated); saveCertificates(updated);
