@@ -182,8 +182,8 @@ const DynamicModal = ({ config, onClose }) => {
                                 alert(`You can only upload up to ${f.maxFiles || 10} files. Extra files were ignored.`);
                               }
                               const processed = await Promise.all(filesToProcess.map(async file => {
-                                if (file.type.startsWith('video/') && file.size > 2.5 * 1024 * 1024) {
-                                  alert(`Video "${file.name}" is too large! Maximum allowed size is 2.5MB to prevent storage crash.`);
+                                if (file.type.startsWith('video/') && file.size > 10 * 1024 * 1024) {
+                                  alert(`Video "${file.name}" is too large! Maximum allowed size is 10MB.`);
                                   return null;
                                 }
                                 if (file.type.startsWith('image/')) {
@@ -200,8 +200,8 @@ const DynamicModal = ({ config, onClose }) => {
                               setFormData(prev => ({ ...prev, [f.name]: [...(Array.isArray(prev[f.name]) ? prev[f.name] : []), ...validProcessed] }));
                             } else {
                               const file = files[0];
-                                if (file.type.startsWith('video/') && file.size > 2.5 * 1024 * 1024) {
-                                  alert(`Video "${file.name}" is too large! Maximum allowed size is 2.5MB to prevent storage crash.`);
+                                if (file.type.startsWith('video/') && file.size > 10 * 1024 * 1024) {
+                                  alert(`Video "${file.name}" is too large! Maximum allowed size is 10MB.`);
                                   setIsProcessing(false);
                                   return;
                                 }
