@@ -126,14 +126,14 @@ const DynamicModal = ({ config, onClose }) => {
             <div key={f.name} style={{ marginBottom: '1rem' }}>
               <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>{f.label}</label>
               {f.type === 'textarea' ? (
-                <textarea name={f.name} value={formData[f.name] || ''} onChange={handleChange} required={f.required !== false} style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px', minHeight: '100px', fontFamily: 'inherit' }} />
+                <textarea name={f.name} value={formData[f.name] || ''} onChange={handleChange} required={false} style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px', minHeight: '100px', fontFamily: 'inherit' }} />
               ) : f.type === 'checkbox' ? (
                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                    <input type="checkbox" name={f.name} checked={!!formData[f.name]} onChange={handleChange} /> 
                    <span style={{ fontSize: '0.9rem', color: '#888' }}>Yes</span>
                  </div>
               ) : f.type === 'select' ? (
-                <select name={f.name} value={formData[f.name] || ''} onChange={handleChange} required={f.required !== false} style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }}>
+                <select name={f.name} value={formData[f.name] || ''} onChange={handleChange} required={false} style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }}>
                   <option value="" disabled>Select an option</option>
                   {f.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
@@ -226,7 +226,7 @@ const DynamicModal = ({ config, onClose }) => {
                   name={f.name} 
                   value={formData[f.name] || ''} 
                   onChange={handleChange} 
-                  required={f.required !== false} 
+                  required={false} 
                   style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }} 
                   onClick={(e) => {
                     if (f.type === 'date' || f.type === 'month') {
