@@ -19,6 +19,33 @@ import {
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { FaArrowUp, FaArrowDown, FaEdit, FaTrash } from 'react-icons/fa';
 import { useWindowSize } from 'react-use';
+import { useWindowSize } from 'react-use';
+
+const FilePreviewItem = ({ url, idx, onRemove }) => {
+  const [rotation, setRotation] = useState(0);
+
+  return (
+    <div style={{ position: 'relative', width: '90px', height: '90px', background: '#222', borderRadius: '8px', border: '1px solid #444', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+       {url.startsWith('data:image') ? (
+         <img src={url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain', transform: `rotate(${rotation}deg)`, transition: 'transform 0.3s ease' }} />
+       ) : url.startsWith('data:video') ? (
+         <video src={url} style={{ width: '100%', height: '100%', objectFit: 'contain', transform: `rotate(${rotation}deg)`, transition: 'transform 0.3s ease' }} controls muted />
+       ) : url.startsWith('data:application/pdf') ? (
+         <div style={{ fontSize: '0.8rem', color: '#4ade80' }}>PDF</div>
+       ) : (
+         <div style={{ fontSize: '0.8rem', color: '#888' }}>File</div>
+       )}
+       
+       <button type="button" onClick={(e) => { e.stopPropagation(); setRotation(prev => prev + 90); }} style={{ position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(0,0,0,0.7)', color: 'white', border: '1px solid #666', borderRadius: '4px', width: '24px', height: '24px', cursor: 'pointer', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Rotate">
+         ↻
+       </button>
+       
+       <button type="button" onClick={() => onRemove(idx)} style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(220,38,38,0.9)', color: 'white', border: 'none', borderRadius: '50%', width: '22px', height: '22px', cursor: 'pointer', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Remove">
+         X
+       </button>
+    </div>
+  );
+};
 
 const calculateDuration = (fromDate, toDate, isCurrent) => {
   if (!fromDate) return '';
@@ -155,6 +182,10 @@ const DynamicModal = ({ config, onClose }) => {
                               alert(`You can only upload up to ${f.maxFiles || 10} files. Extra files were ignored.`);
                             }
                             const processed = await Promise.all(filesToProcess.map(async file => {
+                              if (file.type.startsWith('video/') && file.size > 2.5 * 1024 * 1024) {
+                                alert(`Video "${file.name}" is too large! Maximum allowed size is 2.5MB to prevent storage crash.`);
+                                return null;
+                              }
                               if (file.type.startsWith('image/')) {
                                 return await compressImage(file, 1);
                               } else {
@@ -165,12 +196,17 @@ const DynamicModal = ({ config, onClose }) => {
                                 });
                               }
                             }));
-                            setFormData(prev => ({ ...prev, [f.name]: [...(Array.isArray(prev[f.name]) ? prev[f.name] : []), ...processed] }));
+                            const validProcessed = processed.filter(p => p !== null);
+                            setFormData(prev => ({ ...prev, [f.name]: [...(Array.isArray(prev[f.name]) ? prev[f.name] : []), ...validProcessed] }));
                           } else {
                             const file = files[0];
-                            if (file.type.startsWith('image/')) {
-                              const compressedBase64 = await compressImage(file, 1);
-                              setFormData(prev => ({ ...prev, [f.name]: compressedBase64 }));
+                              if (file.type.startsWith('video/') && file.size > 2.5 * 1024 * 1024) {
+                                alert(`Video "${file.name}" is too large! Maximum allowed size is 2.5MB to prevent storage crash.`);
+                                return;
+                              }
+                              if (file.type.startsWith('image/')) {
+                                const compressedBase64 = await compressImage(file, 1);
+                                setFormData(prev => ({ ...prev, [f.name]: compressedBase64 }));
                             } else {
                               const reader = new FileReader();
                               reader.readAsDataURL(file);
@@ -188,24 +224,18 @@ const DynamicModal = ({ config, onClose }) => {
                     style={{ width: '100%', padding: '0.75rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px' }} 
                   />
                   {f.multiple ? (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.75rem' }}>
                       {Array.isArray(formData[f.name]) && formData[f.name].map((url, idx) => (
-                        <div key={idx} style={{ position: 'relative' }}>
-                           {url.startsWith('data:image') ? (
-                             <img src={url} alt="Preview" style={{ height: '60px', width: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #333' }} />
-                           ) : url.startsWith('data:video') ? (
-                             <video src={url} style={{ height: '60px', width: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #333' }} controls muted />
-                           ) : url.startsWith('data:application/pdf') ? (
-                             <div style={{ height: '60px', width: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222', borderRadius: '4px', fontSize: '0.7rem' }}>PDF</div>
-                           ) : (
-                             <div style={{ height: '60px', width: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222', borderRadius: '4px', fontSize: '0.6rem' }}>File</div>
-                           )}
-                           <button type="button" onClick={() => {
+                        <FilePreviewItem 
+                           key={idx} 
+                           url={url} 
+                           idx={idx} 
+                           onRemove={(indexToRemove) => {
                              const newArr = [...formData[f.name]];
-                             newArr.splice(idx, 1);
+                             newArr.splice(indexToRemove, 1);
                              setFormData(prev => ({ ...prev, [f.name]: newArr }));
-                           }} style={{ position: 'absolute', top: -5, right: -5, background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>X</button>
-                        </div>
+                           }} 
+                        />
                       ))}
                     </div>
                   ) : (
