@@ -194,7 +194,7 @@ const DynamicModal = ({ config, onClose }) => {
                            {url.startsWith('data:image') ? (
                              <img src={url} alt="Preview" style={{ height: '60px', width: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #333' }} />
                            ) : url.startsWith('data:video') ? (
-                             <video src={url} style={{ height: '60px', width: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #333' }} muted />
+                             <video src={url} style={{ height: '60px', width: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #333' }} controls muted />
                            ) : url.startsWith('data:application/pdf') ? (
                              <div style={{ height: '60px', width: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#222', borderRadius: '4px', fontSize: '0.7rem' }}>PDF</div>
                            ) : (

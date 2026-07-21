@@ -128,7 +128,11 @@ export default function Certificates() {
                       <div className="custom-scrollbar" style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', padding: '1.5rem 0.5rem', scrollbarWidth: 'thin', scrollbarColor: 'var(--accent-red) #222', background: 'rgba(0,0,0,0.3)', borderRadius: '12px', border: '1px solid #333' }}>
                         {photos.map((url, idx) => (
                            <div key={idx} style={{ flex: '0 0 auto', padding: '0.75rem', background: '#fff', borderRadius: '4px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', transform: `rotate(${idx % 2 === 0 ? -2 : 3}deg)`, transition: 'transform 0.3s ease', cursor: 'pointer', maxWidth: '280px' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05) rotate(0deg)'} onMouseLeave={e => e.currentTarget.style.transform = `scale(1) rotate(${idx % 2 === 0 ? -2 : 3}deg)`}>
-                             <img src={url} alt={`Memory ${idx + 1}`} style={{ width: '100%', height: '180px', objectFit: 'cover', border: '1px solid #ddd' }} />
+                             {url.startsWith('data:video') ? (
+                               <video src={url} style={{ width: '100%', height: '180px', objectFit: 'cover', border: '1px solid #ddd' }} controls muted />
+                             ) : (
+                               <img src={url} alt={`Memory ${idx + 1}`} style={{ width: '100%', height: '180px', objectFit: 'cover', border: '1px solid #ddd' }} />
+                             )}
                              <p style={{ color: '#000', textAlign: 'center', margin: '0.75rem 0 0 0', fontFamily: 'cursive', fontSize: '1.1rem', fontWeight: 'bold' }}>{photos.length === 1 ? 'Tournament Memory' : `Memory ${idx + 1}`}</p>
                            </div>
                         ))}
